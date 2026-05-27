@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000/api',
-  paypalClientId: 'PEGA_AQUI_TU_PAYPAL_CLIENT_ID',
+  paypalClientId: 'AXF29OJDNLxHN9GSp-g0A5lHjeNOsbihfXwUZ005wARSaJgTY8D8nOUBGGEUyqaIT6nN_Abf0q9Pvw16',
   currency: 'MXN'
 };
