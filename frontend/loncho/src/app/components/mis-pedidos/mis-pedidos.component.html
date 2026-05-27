@@ -1,0 +1,159 @@
+<div class="pedidos-page">
+
+  <!-- ── Header ───────────────────────────────────────────────────── -->
+  <div class="pedidos-header">
+    <h1>Mis Pedidos</h1>
+    @if (!loading() && !error()) {
+      <p class="pedidos-sub">
+        <span class="count-num">{{ pedidos().length }}</span>
+        {{ pedidos().length === 1 ? 'pedido' : 'pedidos' }} en tu historial
+      </p>
+    }
+  </div>
+
+  <!-- ── Estado: cargando ─────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="estado-centro">
+      <div class="spinner"></div>
+      <p class="estado-texto">Cargando pedidos...</p>
+    </div>
+  }
+
+  <!-- ── Estado: error ────────────────────────────────────────────── -->
+  @if (!loading() && error()) {
+    <div class="estado-error">
+      <span class="error-icon">⚠</span>
+      <p>{{ error() }}</p>
+      <button class="btn-reintentar" (click)="cargarPedidos()">Reintentar</button>
+    </div>
+  }
+
+  <!-- ── Estado: sin pedidos ──────────────────────────────────────── -->
+  @if (!loading() && !error() && pedidos().length === 0) {
+    <div class="estado-vacio">
+      <div class="vacio-icono">📦</div>
+      <h2>No tienes pedidos aún</h2>
+      <p>Cuando completes una compra, aparecerá aquí.</p>
+      <a routerLink="/" class="btn-catalogo">Ir al catálogo</a>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- LISTA DE PEDIDOS                                               -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  @if (!loading() && !error() && pedidos().length > 0) {
+    <div class="pedidos-lista">
+
+      @for (pedido of pedidos(); track pedido.id) {
+        <div class="pedido-card">
+
+          <!-- ── Cabecera: id · badge · fecha ─────────────────────── -->
+          <div class="pedido-cabecera">
+
+            <span class="pedido-id">Pedido #{{ pedido.id }}</span>
+
+            <span
+              class="pedido-badge"
+              [style.color]="getStatusColor(pedido.status)"
+              [style.borderColor]="getStatusColor(pedido.status)">
+              {{ pedido.status.replace('_', ' ') }}
+            </span>
+
+            <span class="pedido-fecha">
+              {{ formatearFecha(pedido.created_at) }}
+            </span>
+
+          </div>
+
+          <!-- ── Cuerpo: items del pedido ──────────────────────────── -->
+          <div class="pedido-items">
+
+            @for (item of pedido.items.slice(0, 3); track item.producto_id) {
+              <div class="pedido-item">
+                <span class="item-nombre">{{ item.nombre }}</span>
+                <span class="item-qty">×{{ item.cantidad }}</span>
+                <span class="item-precio">
+                  MX${{ item.precio | number:'1.2-2' }}
+                </span>
+              </div>
+            }
+
+            @if (pedido.items.length > 3) {
+              <p class="items-mas">+{{ pedido.items.length - 3 }} producto{{ pedido.items.length - 3 === 1 ? '' : 's' }} más</p>
+            }
+
+          </div>
+
+          <div class="pedido-divider"></div>
+
+          <!-- ── Pie: totales + acciones ───────────────────────────── -->
+          <div class="pedido-pie">
+
+            <!-- Totales -->
+            <div class="pedido-totales">
+              <div class="total-linea">
+                <span>Subtotal</span>
+                <span>MX${{ pedido.subtotal | number:'1.2-2' }}</span>
+              </div>
+              <div class="total-linea">
+                <span>IVA (16 %)</span>
+                <span>MX${{ pedido.iva | number:'1.2-2' }}</span>
+              </div>
+              <div class="total-linea total-final">
+                <span>Total</span>
+                <span>MX${{ pedido.total | number:'1.2-2' }}</span>
+              </div>
+            </div>
+
+            <!-- Acciones (solo si CREADO) -->
+            @if (pedido.status === 'CREADO') {
+              <div class="pedido-acciones">
+
+                <!-- Spinner: cancelando en progreso -->
+                @if (pedidoCancelando() === pedido.id) {
+                  <div class="cancelando">
+                    <div class="spinner-sm"></div>
+                    <span>Cancelando...</span>
+                  </div>
+
+                <!-- Confirmación de cancelación -->
+                } @else if (confirmarCancelar() === pedido.id) {
+                  <div class="confirmar-area">
+                    <p class="confirmar-texto">
+                      ¿Seguro que deseas cancelar este pedido?
+                    </p>
+                    <div class="confirmar-botones">
+                      <button
+                        class="btn-confirmar-si"
+                        (click)="cancelar(pedido.id)">
+                        Sí, cancelar
+                      </button>
+                      <button
+                        class="btn-confirmar-no"
+                        (click)="confirmarCancelar.set(null)">
+                        No, volver
+                      </button>
+                    </div>
+                  </div>
+
+                <!-- Botón inicial de cancelar -->
+                } @else {
+                  <button
+                    class="btn-cancelar"
+                    (click)="solicitarCancelacion(pedido.id)">
+                    Cancelar pedido
+                  </button>
+                }
+
+              </div>
+            }
+
+          </div>
+
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

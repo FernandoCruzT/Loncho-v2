@@ -1,0 +1,454 @@
+/* ══════════════════════════════════════════════════════════════════
+   PÁGINA CARRITO
+══════════════════════════════════════════════════════════════════ */
+.carrito-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+  min-height: 60vh;
+}
+
+/* ── Estado vacío ────────────────────────────────────────────────── */
+.carrito-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 52vh;
+  text-align: center;
+}
+
+.vacio-icono {
+  font-size: 4.5rem;
+  line-height: 1;
+  opacity: 0.3;
+}
+
+.carrito-vacio h2 {
+  font-size: 1.65rem;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0;
+}
+
+.carrito-vacio p {
+  color: #666666;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.btn-catalogo {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.65rem 1.8rem;
+  background: #e63030;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.87rem;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-catalogo:hover {
+  background: #c42020;
+  transform: translateY(-1px);
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+.carrito-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.carrito-header h1 {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.link-seguir {
+  font-size: 0.85rem;
+  color: #aaaaaa;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.link-seguir:hover {
+  color: #e63030;
+}
+
+/* ── Layout dos columnas (2fr 1fr) ───────────────────────────────── */
+.carrito-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LISTA DE ITEMS (columna izquierda)
+══════════════════════════════════════════════════════════════════ */
+.carrito-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.carrito-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 12px;
+  padding: 1rem;
+  transition: border-color 0.2s;
+}
+
+.carrito-item:hover {
+  border-color: #333333;
+}
+
+/* ── Imagen cuadrada 80 × 80 ─────────────────────────────────────── */
+.item-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background: #1a1a1a;
+}
+
+/* ── Info del item ───────────────────────────────────────────────── */
+.item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  min-width: 0;
+}
+
+.item-nombre {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #eeeeee;
+  line-height: 1.3;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-categoria {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #e63030;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.item-descripcion {
+  font-size: 0.78rem;
+  color: #666666;
+  line-height: 1.45;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-precio-unit {
+  font-size: 0.8rem;
+  color: #999999;
+  margin: 0.1rem 0 0;
+}
+
+/* ── Controles +/− y Quitar ──────────────────────────────────────── */
+.item-controles {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.55rem;
+  flex-wrap: wrap;
+}
+
+/* ── Controles cantidad (mismo estilo que catálogo) ──────────────── */
+.controles-cantidad {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.controles-cantidad button {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  padding: 0;
+}
+
+/* Botón − : esquinas izquierdas */
+.controles-cantidad button:first-child {
+  border-radius: 7px 0 0 7px;
+}
+
+.controles-cantidad button:first-child:hover {
+  background: #2a2a2a;
+}
+
+/* Número central */
+.controles-cantidad span {
+  width: 44px;
+  height: 34px;
+  background: #111111;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+/* Botón + : rojo, esquinas derechas */
+.controles-cantidad button:last-child {
+  background: #e63030;
+  border-color: #e63030;
+  border-radius: 0 7px 7px 0;
+  color: #ffffff;
+}
+
+.controles-cantidad button:last-child:hover:not(:disabled) {
+  background: #c42020;
+  border-color: #c42020;
+}
+
+.controles-cantidad button:disabled {
+  background: #555555;
+  border-color: #555555;
+  cursor: not-allowed;
+}
+
+/* Botón Quitar */
+.btn-quitar {
+  background: transparent;
+  border: 1px solid #2e2e2e;
+  color: #777777;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.28rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.18s, color 0.18s;
+  height: 34px;
+}
+
+.btn-quitar:hover {
+  border-color: #e63030;
+  color: #e63030;
+}
+
+/* ── Precio total del item (derecha) ─────────────────────────────── */
+.item-total {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   RESUMEN DEL PEDIDO (columna derecha)
+══════════════════════════════════════════════════════════════════ */
+.carrito-resumen {
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 12px;
+  padding: 1.5rem;
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.carrito-resumen h2 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.35rem;
+}
+
+/* Líneas subtotal / envío / iva */
+.resumen-linea {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.87rem;
+  color: #aaaaaa;
+}
+
+.gratis {
+  color: #22c55e;
+  font-weight: 700;
+}
+
+.resumen-divider {
+  height: 1px;
+  background: #222222;
+  margin: 0.2rem 0;
+}
+
+/* Fila total */
+.resumen-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+
+/* Error */
+.msg-error {
+  color: #e63030;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+/* ── Botón PayPal ─────────────────────────────────────────────────── */
+.btn-paypal {
+  width: 100%;
+  padding: 0.78rem 1rem;
+  background: #0070ba;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  transition: background 0.2s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+
+.btn-paypal:hover {
+  background: #005ea6;
+  transform: translateY(-1px);
+}
+
+.btn-paypal strong {
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+/* ── Botón Recibo XML ─────────────────────────────────────────────── */
+.btn-xml {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  background: #0a0a0a;
+  color: #cccccc;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s, color 0.2s;
+  letter-spacing: 0.01em;
+}
+
+.btn-xml:hover {
+  border-color: #555555;
+  color: #ffffff;
+}
+
+/* ── Botón Vaciar ─────────────────────────────────────────────────── */
+.btn-vaciar {
+  background: transparent;
+  border: none;
+  color: #555555;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0.3rem;
+  text-align: center;
+  transition: color 0.2s;
+  margin-top: 0.1rem;
+}
+
+.btn-vaciar:hover {
+  color: #e63030;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════════════ */
+
+/* Tablet / móvil ancho: columna única */
+@media (max-width: 768px) {
+  .carrito-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .carrito-resumen {
+    position: static;
+  }
+}
+
+/* Móvil pequeño: wrap en el item */
+@media (max-width: 480px) {
+  .carrito-item {
+    flex-wrap: wrap;
+  }
+
+  .item-img {
+    width: 72px;
+    height: 72px;
+  }
+
+  .item-total {
+    width: 100%;
+    text-align: right;
+    padding-top: 0.25rem;
+    border-top: 1px solid #1e1e1e;
+    margin-top: 0.25rem;
+  }
+}

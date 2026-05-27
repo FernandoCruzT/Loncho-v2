@@ -1,0 +1,133 @@
+<div class="carrito-page">
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- ESTADO VACÍO                                                   -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  @if (cantidadTotal() === 0) {
+    <div class="carrito-vacio">
+      <div class="vacio-icono">🛒</div>
+      <h2>Tu carrito está vacío</h2>
+      <p>Aún no has agregado productos a tu carrito.</p>
+      <a routerLink="/" class="btn-catalogo">Ver catálogo</a>
+    </div>
+
+  } @else {
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- CON ITEMS                                                      -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+
+    <!-- ── Header ───────────────────────────────────────────────── -->
+    <div class="carrito-header">
+      <h1>Tu Carrito</h1>
+      <a routerLink="/" class="link-seguir">← Seguir comprando</a>
+    </div>
+
+    <!-- ── Layout dos columnas ──────────────────────────────────── -->
+    <div class="carrito-layout">
+
+      <!-- ── Lista de items (izquierda, 2fr) ──────────────────── -->
+      <div class="carrito-items">
+
+        @for (item of items(); track item.product.id) {
+          <div class="carrito-item">
+
+            <!-- Imagen -->
+            <img
+              [src]="item.product.imageUrl"
+              [alt]="item.product.nombre"
+              class="item-img"
+            />
+
+            <!-- Información -->
+            <div class="item-info">
+              <h3 class="item-nombre">{{ item.product.nombre }}</h3>
+              <span class="item-categoria">{{ item.product.categoria }}</span>
+              <p class="item-descripcion">{{ item.product.descripcion }}</p>
+              <p class="item-precio-unit">
+                MX${{ item.product.precio | number:'1.2-2' }} c/u
+              </p>
+
+              <!-- Controles +/- y Quitar -->
+              <div class="item-controles">
+                <div class="controles-cantidad">
+                  <button (click)="disminuir(item.product.id)">−</button>
+                  <span>{{ item.cantidad }}</span>
+                  <button
+                    (click)="aumentar(item.product)"
+                    [disabled]="item.cantidad >= item.product.stock">
+                    +
+                  </button>
+                </div>
+                <button class="btn-quitar" (click)="eliminar(item.product.id)">
+                  Quitar
+                </button>
+              </div>
+            </div>
+
+            <!-- Precio total del item -->
+            <div class="item-total">
+              MX${{ (item.product.precio * item.cantidad) | number:'1.2-2' }}
+            </div>
+
+          </div>
+        }
+
+      </div>
+
+      <!-- ── Resumen del pedido (derecha, 1fr) ─────────────────── -->
+      <aside class="carrito-resumen">
+        <h2>Resumen del pedido</h2>
+
+        <div class="resumen-linea">
+          <span>Subtotal ({{ cantidadTotal() }} artículos)</span>
+          <span>MX${{ subtotal() | number:'1.2-2' }}</span>
+        </div>
+
+        <div class="resumen-linea">
+          <span>Envío</span>
+          <span class="gratis">Gratis</span>
+        </div>
+
+        <div class="resumen-linea">
+          <span>IVA (16 %)</span>
+          <span>MX${{ iva() | number:'1.2-2' }}</span>
+        </div>
+
+        <div class="resumen-divider"></div>
+
+        <div class="resumen-total">
+          <span>Total</span>
+          <span>MX${{ total() | number:'1.2-2' }}</span>
+        </div>
+
+        <!-- Error -->
+        @if (mensajeError()) {
+          <p class="msg-error" role="alert">
+            <span>⚠</span> {{ mensajeError() }}
+          </p>
+        }
+
+        <!-- Botón PayPal -->
+        <button class="btn-paypal" (click)="irACheckout()">
+          <span>Pagar con</span>
+          <strong>PayPal</strong>
+        </button>
+
+        <!-- Botón XML -->
+        <button class="btn-xml" (click)="exportarXML()">
+          📄 Generar Recibo XML
+        </button>
+
+        <!-- Vaciar carrito -->
+        <button class="btn-vaciar" (click)="vaciar()">
+          Vaciar carrito
+        </button>
+
+      </aside>
+
+    </div>
+
+  }
+
+</div>

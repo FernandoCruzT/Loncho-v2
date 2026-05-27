@@ -1,0 +1,97 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- ── Logo ──────────────────────────────────────────────────── -->
+    <a routerLink="/" class="logo">
+      <span class="logo-box">L</span>
+      <span class="logo-text">LONCHO</span>
+    </a>
+
+    <!-- ── Título ────────────────────────────────────────────────── -->
+    <div class="auth-header">
+      <h1>Crear cuenta</h1>
+      <p class="auth-sub">Únete a Loncho</p>
+    </div>
+
+    <!-- ── Formulario ────────────────────────────────────────────── -->
+    <form (submit)="onSubmit($event)" novalidate class="auth-form">
+
+      <!-- Nombre -->
+      <div class="campo">
+        <label for="reg-nombre">Nombre completo</label>
+        <input
+          id="reg-nombre"
+          type="text"
+          autocomplete="name"
+          placeholder="Tu nombre"
+          [value]="nombre()"
+          (input)="nombre.set($any($event.target).value)"
+          [disabled]="loading()"
+        />
+      </div>
+
+      <!-- Email -->
+      <div class="campo">
+        <label for="reg-email">Correo electrónico</label>
+        <input
+          id="reg-email"
+          type="email"
+          autocomplete="email"
+          placeholder="tu@email.com"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+          [disabled]="loading()"
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="campo">
+        <label for="reg-password">Contraseña</label>
+        <input
+          id="reg-password"
+          type="password"
+          autocomplete="new-password"
+          placeholder="Mínimo 8 caracteres"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)"
+          [disabled]="loading()"
+        />
+      </div>
+
+      <!-- Error -->
+      @if (error()) {
+        <p class="msg-error" role="alert">
+          <span class="error-icon">⚠</span> {{ error() }}
+        </p>
+      }
+
+      <!-- Botón principal -->
+      <button type="submit" class="btn-primary" [disabled]="loading()">
+        @if (loading()) {
+          <span class="btn-spinner" aria-hidden="true"></span>
+          Creando cuenta...
+        } @else {
+          Crear cuenta
+        }
+      </button>
+
+    </form>
+
+    <!-- ── Separador ─────────────────────────────────────────────── -->
+    <div class="separador">
+      <span>o</span>
+    </div>
+
+    <!-- ── Continuar sin cuenta ──────────────────────────────────── -->
+    <button class="btn-secondary" routerLink="/" [disabled]="loading()">
+      Continuar sin cuenta
+    </button>
+
+    <!-- ── Link a login ──────────────────────────────────────────── -->
+    <p class="link-inferior">
+      ¿Ya tienes cuenta?
+      <a routerLink="/login">Inicia sesión</a>
+    </p>
+
+  </div>
+</div>

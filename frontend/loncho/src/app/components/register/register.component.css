@@ -1,0 +1,257 @@
+/* ── Página centrada ─────────────────────────────────────────────── */
+.auth-page {
+  min-height: calc(100vh - 64px - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  background: #0d0d0d;
+}
+
+/* ── Card ────────────────────────────────────────────────────────── */
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 16px;
+  padding: 2.5rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+/* ── Logo ────────────────────────────────────────────────────────── */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  justify-content: center;
+}
+
+.logo-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: #e63030;
+  color: #fff;
+  font-weight: 900;
+  font-size: 1.1rem;
+  border-radius: 6px;
+}
+
+.logo-text {
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: 0.18em;
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+.auth-header {
+  text-align: center;
+}
+
+.auth-header h1 {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.auth-sub {
+  margin-top: 0.3rem;
+  color: #666;
+  font-size: 0.87rem;
+}
+
+/* ── Formulario ──────────────────────────────────────────────────── */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* ── Campo ───────────────────────────────────────────────────────── */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.campo label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #aaaaaa;
+  letter-spacing: 0.03em;
+}
+
+.campo input {
+  background: #0d0d0d;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-family: inherit;
+  padding: 0.65rem 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.campo input::placeholder {
+  color: #444444;
+}
+
+.campo input:focus {
+  border-color: #e63030;
+}
+
+.campo input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Error ───────────────────────────────────────────────────────── */
+.msg-error {
+  background: rgba(230, 48, 48, 0.1);
+  border: 1px solid rgba(230, 48, 48, 0.3);
+  border-radius: 8px;
+  color: #ff6b6b;
+  font-size: 0.83rem;
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error-icon {
+  flex-shrink: 0;
+  font-size: 0.95rem;
+}
+
+/* ── Botón principal ─────────────────────────────────────────────── */
+.btn-primary {
+  width: 100%;
+  padding: 0.72rem;
+  background: #e63030;
+  color: #ffffff;
+  border: none;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  transition: background 0.18s, transform 0.1s;
+  margin-top: 0.2rem;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #c42020;
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── Spinner del botón ───────────────────────────────────────────── */
+.btn-spinner {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Separador ───────────────────────────────────────────────────── */
+.separador {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #333;
+  font-size: 0.82rem;
+}
+
+.separador::before,
+.separador::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #222;
+}
+
+/* ── Botón secundario ────────────────────────────────────────────── */
+.btn-secondary {
+  width: 100%;
+  padding: 0.68rem;
+  background: transparent;
+  color: #aaaaaa;
+  border: 1px solid #333333;
+  border-radius: 9px;
+  font-size: 0.87rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.18s, color 0.18s;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: #e63030;
+  color: #ffffff;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Link inferior ───────────────────────────────────────────────── */
+.link-inferior {
+  text-align: center;
+  font-size: 0.83rem;
+  color: #555555;
+}
+
+.link-inferior a {
+  color: #e63030;
+  font-weight: 600;
+  text-decoration: none;
+  transition: text-decoration 0.15s;
+}
+
+.link-inferior a:hover {
+  text-decoration: underline;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .auth-card {
+    border-radius: 12px;
+    padding: 2rem 1.25rem 1.5rem;
+  }
+}

@@ -1,0 +1,11 @@
+/* ── App shell ───────────────────────────────────────────────────── */
+/* Los resets globales viven en src/styles.css (cargado por Angular  */
+/* como hoja no-scoped). Aquí solo estilos del componente raíz.     */
+
+main {
+  margin: 0;
+  padding: 0;
+  margin-top: 0;    /* explícito: sin espacio entre navbar y contenido */
+  padding-top: 0;
+  min-height: calc(100vh - 64px - 80px);
+}

@@ -1,0 +1,84 @@
+import { Injectable, signal, computed } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
+
+interface Usuario {
+  id: number;
+  nombre: string;
+  email: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class AuthService {
+
+  // ─── Signals privados ─────────────────────────────────────────────
+  private _usuario = signal<Usuario | null>(null);
+  private _token   = signal<string | null>(null);
+
+  // ─── Computed públicos ────────────────────────────────────────────
+  readonly isLoggedIn = computed(() => !!this._token());
+  readonly usuario    = this._usuario.asReadonly();
+
+  constructor(private http: HttpClient) {
+    // Restaurar sesión desde localStorage al arrancar la app
+    const token      = localStorage.getItem('loncho_token');
+    const usuarioStr = localStorage.getItem('loncho_usuario');
+
+    if (token) {
+      this._token.set(token);
+    }
+    if (usuarioStr) {
+      try {
+        this._usuario.set(JSON.parse(usuarioStr));
+      } catch {
+        // JSON inválido: ignorar silenciosamente
+      }
+    }
+  }
+
+  // ─── Login ────────────────────────────────────────────────────────
+  login(email: string, password: string): Observable<any> {
+    return this.http
+      .post<any>(`${environment.apiUrl}/auth/login`, { email, password })
+      .pipe(
+        tap(res => {
+          if (res.ok) {
+            localStorage.setItem('loncho_token',   res.token);
+            localStorage.setItem('loncho_usuario', JSON.stringify(res.usuario));
+            this._token.set(res.token);
+            this._usuario.set(res.usuario);
+          }
+        })
+      );
+  }
+
+  // ─── Register ─────────────────────────────────────────────────────
+  register(nombre: string, email: string, password: string): Observable<any> {
+    return this.http
+      .post<any>(`${environment.apiUrl}/auth/register`, { nombre, email, password })
+      .pipe(
+        tap(res => {
+          if (res.ok) {
+            localStorage.setItem('loncho_token',   res.token);
+            localStorage.setItem('loncho_usuario', JSON.stringify(res.usuario));
+            this._token.set(res.token);
+            this._usuario.set(res.usuario);
+          }
+        })
+      );
+  }
+
+  // ─── Logout ───────────────────────────────────────────────────────
+  logout(): void {
+    localStorage.removeItem('loncho_token');
+    localStorage.removeItem('loncho_usuario');
+    this._token.set(null);
+    this._usuario.set(null);
+  }
+
+  // ─── Helper para headers ──────────────────────────────────────────
+  getToken(): string | null {
+    return this._token();
+  }
+}

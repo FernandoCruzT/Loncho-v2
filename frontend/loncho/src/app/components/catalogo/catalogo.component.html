@@ -1,0 +1,123 @@
+<section class="catalogo">
+
+  <!-- ── Header ──────────────────────────────────────────────────── -->
+  <header class="catalogo-header">
+    <div class="header-texto">
+      <h1>Nueva colección</h1>
+      <p class="piezas">
+        <span class="piezas-num">{{ productosFiltrados().length }}</span>
+        piezas disponibles
+      </p>
+    </div>
+  </header>
+
+  <!-- ── Filtros de categoría ─────────────────────────────────────── -->
+  <div class="filtros" role="group" aria-label="Filtrar por categoría">
+    @for (cat of categorias; track cat) {
+      <button
+        class="filtro-btn"
+        [class.activo]="categoriaActiva() === cat"
+        (click)="categoriaActiva.set(cat)">
+        {{ cat }}
+      </button>
+    }
+  </div>
+
+  <!-- ── Estado: cargando ─────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="estado-centro">
+      <div class="spinner"></div>
+      <p class="estado-texto">Cargando productos...</p>
+    </div>
+  }
+
+  <!-- ── Estado: error ────────────────────────────────────────────── -->
+  @if (!loading() && error()) {
+    <div class="estado-error">
+      <span class="error-icon">⚠</span>
+      <p>{{ error() }}</p>
+    </div>
+  }
+
+  <!-- ── Grid de productos ────────────────────────────────────────── -->
+  @if (!loading() && !error()) {
+    <div class="productos-grid">
+
+      @for (product of productosFiltrados(); track product.id) {
+
+        <article class="producto-card" [class.card-agotado]="!product.enStock">
+
+          <!-- Imagen -->
+          <div class="producto-img-wrap">
+            <img
+              [src]="product.imageUrl"
+              [alt]="product.nombre"
+              class="producto-img"
+              loading="lazy"
+            />
+            <span class="badge-categoria">{{ product.categoria }}</span>
+            @if (!product.enStock) {
+              <div class="overlay-agotado">AGOTADO</div>
+            }
+          </div>
+
+          <!-- Info -->
+          <div class="producto-info">
+            <h3 class="producto-nombre">{{ product.nombre }}</h3>
+            <p class="producto-precio">
+              MX${{ product.precio | number:'1.2-2' }}
+            </p>
+            <p class="producto-stock">
+              @if (product.enStock) {
+                {{ product.stock }} disponibles
+              } @else {
+                Sin stock
+              }
+            </p>
+          </div>
+
+          <!-- Acción -->
+          <div class="producto-accion">
+            @if (product.enStock) {
+              @if (getCantidad(product.id) === 0) {
+                <!-- Estado inicial: botón AGREGAR -->
+                <button class="btn-agregar" (click)="agregar(product)">
+                  + AGREGAR
+                </button>
+              } @else {
+                <!-- Estado activo: controles +/- -->
+                <div class="controles-cantidad">
+                  <button (click)="disminuir(product.id)">−</button>
+                  <span>{{ getCantidad(product.id) }}</span>
+                  <button
+                    (click)="aumentar(product)"
+                    [disabled]="getCantidad(product.id) >= product.stock">
+                    +
+                  </button>
+                </div>
+              }
+            } @else {
+              <button class="btn-agotado" disabled>AGOTADO</button>
+            }
+          </div>
+
+        </article>
+
+      } @empty {
+        <div class="sin-resultados">
+          <p>No hay productos en esta categoría.</p>
+        </div>
+      }
+
+    </div>
+  }
+
+</section>
+
+<!-- ── Toast ─────────────────────────────────────────────────────── -->
+@if (toastVisible()) {
+  <div class="toast" role="alert" aria-live="polite">
+    <span class="toast-check">✓</span>
+    <span><strong>{{ toast() }}</strong> agregado al carrito</span>
+  </div>
+}

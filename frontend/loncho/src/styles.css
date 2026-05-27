@@ -1,0 +1,25 @@
+/* ── Reset global ────────────────────────────────────────────────── */
+/* Cargado en angular.json como hoja global (no scoped).            */
+/* Elimina el margin: 8px que el navegador pone en body por defecto */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #0d0d0d;
+  color: #ffffff;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

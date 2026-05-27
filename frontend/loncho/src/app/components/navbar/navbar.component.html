@@ -1,0 +1,79 @@
+<nav class="navbar">
+  <div class="navbar-inner">
+
+    <!-- ── Logo ──────────────────────────────────────────── -->
+    <a routerLink="/" class="logo">
+      <span class="logo-box">L</span>
+      <span class="logo-text">LONCHO</span>
+    </a>
+
+    <!-- ── Links desktop ─────────────────────────────────── -->
+    <ul class="nav-links" [class.open]="menuAbierto()">
+
+      <li>
+        <a routerLink="/"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: true }">
+          CATÁLOGO
+        </a>
+      </li>
+
+      @if (isLoggedIn()) {
+        <li>
+          <a routerLink="/mis-pedidos" routerLinkActive="active">
+            MIS PEDIDOS
+          </a>
+        </li>
+        <li>
+          <a routerLink="/mis-pedidos" class="usuario-chip">
+            <span class="usuario-icon">👤</span>
+            {{ usuario()?.nombre }}
+          </a>
+        </li>
+      }
+
+      <!-- Carrito con badge -->
+      <li class="carrito-item">
+        <a routerLink="/carrito" routerLinkActive="active" class="carrito-btn">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="22" height="22"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round">
+            <circle cx="9"  cy="21" r="1"/>
+            <circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          @if (cantidadCarrito() > 0) {
+            <span class="badge">{{ cantidadCarrito() }}</span>
+          }
+        </a>
+      </li>
+
+      <!-- Sesión -->
+      @if (isLoggedIn()) {
+        <li>
+          <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+        </li>
+      } @else {
+        <li>
+          <a routerLink="/login" class="btn-login">Iniciar sesión</a>
+        </li>
+      }
+
+    </ul>
+
+    <!-- ── Hamburguesa móvil ──────────────────────────────── -->
+    <button class="menu-toggle"
+            (click)="menuAbierto.set(!menuAbierto())"
+            aria-label="Menú">
+      <span [class.rotado]="menuAbierto()"></span>
+      <span [class.oculto]="menuAbierto()"></span>
+      <span [class.rotado-inv]="menuAbierto()"></span>
+    </button>
+
+  </div>
+</nav>

@@ -1,0 +1,83 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- ── Logo ──────────────────────────────────────────────────── -->
+    <a routerLink="/" class="logo">
+      <span class="logo-box">L</span>
+      <span class="logo-text">LONCHO</span>
+    </a>
+
+    <!-- ── Título ────────────────────────────────────────────────── -->
+    <div class="auth-header">
+      <h1>Iniciar sesión</h1>
+      <p class="auth-sub">Bienvenido de vuelta</p>
+    </div>
+
+    <!-- ── Formulario ────────────────────────────────────────────── -->
+    <form (submit)="onSubmit($event)" novalidate class="auth-form">
+
+      <!-- Email -->
+      <div class="campo">
+        <label for="login-email">Correo electrónico</label>
+        <input
+          id="login-email"
+          type="email"
+          autocomplete="email"
+          placeholder="tu@email.com"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+          [disabled]="loading()"
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="campo">
+        <label for="login-password">Contraseña</label>
+        <input
+          id="login-password"
+          type="password"
+          autocomplete="current-password"
+          placeholder="••••••••"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)"
+          [disabled]="loading()"
+        />
+      </div>
+
+      <!-- Error -->
+      @if (error()) {
+        <p class="msg-error" role="alert">
+          <span class="error-icon">⚠</span> {{ error() }}
+        </p>
+      }
+
+      <!-- Botón principal -->
+      <button type="submit" class="btn-primary" [disabled]="loading()">
+        @if (loading()) {
+          <span class="btn-spinner" aria-hidden="true"></span>
+          Ingresando...
+        } @else {
+          Iniciar sesión
+        }
+      </button>
+
+    </form>
+
+    <!-- ── Separador ─────────────────────────────────────────────── -->
+    <div class="separador">
+      <span>o</span>
+    </div>
+
+    <!-- ── Continuar sin cuenta ──────────────────────────────────── -->
+    <button class="btn-secondary" routerLink="/" [disabled]="loading()">
+      Continuar sin cuenta
+    </button>
+
+    <!-- ── Link a registro ───────────────────────────────────────── -->
+    <p class="link-inferior">
+      ¿No tienes cuenta?
+      <a routerLink="/register">Regístrate aquí</a>
+    </p>
+
+  </div>
+</div>

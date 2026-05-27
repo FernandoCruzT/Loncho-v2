@@ -1,0 +1,227 @@
+/* ── Navbar base ─────────────────────────────────────────────────── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #0a0a0a;
+  border-bottom: 3px solid #e63030;
+  height: 64px;
+}
+
+.navbar-inner {
+  max-width: 1200px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+/* ── Logo ────────────────────────────────────────────────────────── */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logo-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #e63030;
+  color: #fff;
+  font-weight: 900;
+  font-size: 1.1rem;
+  border-radius: 4px;
+  letter-spacing: 0;
+}
+
+.logo-text {
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.18em;
+}
+
+/* ── Nav links ───────────────────────────────────────────────────── */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  color: #cccccc;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: #e63030;
+}
+
+/* ── Usuario chip (ahora es <a>, clickeable) ─────────────────────── */
+/* Especificidad a.usuario-chip = 0-1-1, igual a .nav-links a.       */
+/* Al aparecer después en el archivo, sus valores prevalecen.        */
+a.usuario-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #aaaaaa;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+a.usuario-chip:hover {
+  color: #e63030;
+}
+
+.usuario-icon {
+  font-size: 1rem;
+}
+
+/* ── Carrito ─────────────────────────────────────────────────────── */
+.carrito-item {
+  position: relative;
+}
+
+.carrito-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #cccccc;
+  transition: color 0.2s;
+  padding: 0.15rem;
+}
+
+.carrito-btn:hover,
+.carrito-btn.active {
+  color: #e63030;
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #e63030;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0 3px;
+}
+
+/* ── Botones ─────────────────────────────────────────────────────── */
+.btn-login {
+  background: #e63030;
+  color: #fff !important;
+  padding: 0.4rem 1.1rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transition: background 0.2s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.btn-login:hover {
+  background: #c42020;
+  transform: translateY(-1px);
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid #555;
+  color: #aaaaaa;
+  padding: 0.38rem 1rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.btn-logout:hover {
+  border-color: #e63030;
+  color: #e63030;
+}
+
+/* ── Hamburguesa ─────────────────────────────────────────────────── */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+}
+
+.menu-toggle span {
+  display: block;
+  height: 2px;
+  background: #cccccc;
+  border-radius: 2px;
+  transition: transform 0.25s, opacity 0.2s;
+  transform-origin: center;
+}
+
+.menu-toggle span.rotado     { transform: rotate(45deg)  translateY(7px); }
+.menu-toggle span.oculto     { opacity: 0; }
+.menu-toggle span.rotado-inv { transform: rotate(-45deg) translateY(-7px); }
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: flex;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: #0a0a0a;
+    border-bottom: 2px solid #e63030;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+
+  .nav-links.open {
+    max-height: 400px;
+    padding: 1rem 1.5rem;
+    gap: 1.2rem;
+  }
+}

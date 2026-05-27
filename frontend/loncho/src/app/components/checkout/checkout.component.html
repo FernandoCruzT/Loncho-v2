@@ -1,0 +1,145 @@
+<div class="checkout-page">
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- ESTADO 1 — PAGO EXITOSO                                        -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  @if (pagoExitoso()) {
+
+    <div class="pago-exitoso">
+
+      <!-- Ícono check -->
+      <div class="check-circle">✓</div>
+
+      <!-- Títulos -->
+      <h1>¡Pago exitoso!</h1>
+      <p class="exito-sub">Gracias por tu compra en Loncho</p>
+
+      <!-- Tarjeta de transacción -->
+      <div class="transaccion-card">
+
+        <div class="tx-fila">
+          <span class="tx-label">Número de orden</span>
+          <span class="tx-valor">
+            {{ pagoExitoso().orderID ?? pagoExitoso().pedidoId ?? '—' }}
+          </span>
+        </div>
+
+        <div class="tx-fila">
+          <span class="tx-label">Estado</span>
+          <span class="tx-valor tx-estado">{{ pagoExitoso().status ?? '—' }}</span>
+        </div>
+
+        <div class="tx-fila">
+          <span class="tx-label">Correo del pagador</span>
+          <span class="tx-valor">{{ pagoExitoso().payerEmail ?? '—' }}</span>
+        </div>
+
+        <div class="tx-fila tx-fila-total">
+          <span class="tx-label">Total pagado</span>
+          <span class="tx-valor tx-total">
+            MX${{ pagoExitoso().amount?.value ?? total() | number:'1.2-2' }}
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Acciones -->
+      <div class="exito-acciones">
+        <a routerLink="/" class="btn-catalogo">Volver al catálogo</a>
+        <a routerLink="/mis-pedidos" class="btn-pedidos">Ver mis pedidos</a>
+      </div>
+
+    </div>
+
+  } @else {
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- ESTADO 2 — CHECKOUT NORMAL                                     -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+
+    <!-- ── Header ───────────────────────────────────────────────── -->
+    <div class="checkout-header">
+      <h1>Finalizar Compra</h1>
+      <a routerLink="/carrito" class="link-volver">← Volver al carrito</a>
+    </div>
+
+    <!-- ── Layout dos columnas ──────────────────────────────────── -->
+    <div class="checkout-layout">
+
+      <!-- IZQUIERDA — Resumen del pedido ─────────────────────────── -->
+      <div class="checkout-resumen">
+        <h2>Resumen del pedido</h2>
+
+        <!-- Lista de items -->
+        <div class="resumen-items">
+          @for (item of items(); track item.product.id) {
+            <div class="resumen-item">
+              <img
+                [src]="item.product.imageUrl"
+                [alt]="item.product.nombre"
+                class="resumen-img"
+              />
+              <div class="resumen-item-info">
+                <span class="resumen-nombre">{{ item.product.nombre }}</span>
+                <span class="resumen-cant">x{{ item.cantidad }}</span>
+              </div>
+              <span class="resumen-precio">
+                MX${{ (item.product.precio * item.cantidad) | number:'1.2-2' }}
+              </span>
+            </div>
+          }
+        </div>
+
+        <div class="resumen-divider"></div>
+
+        <!-- Totales -->
+        <div class="totales">
+          <div class="total-linea">
+            <span>Subtotal</span>
+            <span>MX${{ subtotal() | number:'1.2-2' }}</span>
+          </div>
+          <div class="total-linea">
+            <span>Envío</span>
+            <span class="gratis">Gratis</span>
+          </div>
+          <div class="total-linea">
+            <span>IVA (16 %)</span>
+            <span>MX${{ iva() | number:'1.2-2' }}</span>
+          </div>
+          <div class="total-linea total-final">
+            <span>Total</span>
+            <span>MX${{ total() | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DERECHA — Pago con PayPal ──────────────────────────────── -->
+      <aside class="checkout-pago">
+        <h2>Pagar con PayPal</h2>
+
+        <!-- Spinner de carga -->
+        @if (cargando()) {
+          <div class="loading-area">
+            <div class="spinner"></div>
+            <p class="loading-text">Procesando pago...</p>
+          </div>
+        }
+
+        <!-- Mensaje de error -->
+        @if (error()) {
+          <p class="msg-error" role="alert">
+            <span class="error-icon">⚠</span> {{ error() }}
+          </p>
+        }
+
+        <!-- Contenedor del botón PayPal (SDK lo popula) -->
+        <div id="paypal-button-container" class="paypal-container"></div>
+
+        <p class="seguridad">🔒 Pago 100% seguro · SSL · PCI-DSS</p>
+      </aside>
+
+    </div>
+
+  }
+
+</div>
