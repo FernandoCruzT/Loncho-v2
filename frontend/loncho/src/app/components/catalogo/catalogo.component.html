@@ -81,26 +81,28 @@
 
           <!-- Acción -->
           <div class="producto-accion">
-            @if (product.enStock) {
-              @if (getCantidad(product.id) === 0) {
-                <!-- Estado inicial: botón AGREGAR -->
-                <button class="btn-agregar" (click)="agregar(product)">
-                  + AGREGAR
-                </button>
-              } @else {
-                <!-- Estado activo: controles +/- -->
-                <div class="controles-cantidad">
-                  <button (click)="disminuir(product.id)">−</button>
-                  <span>{{ getCantidad(product.id) }}</span>
-                  <button
-                    (click)="aumentar(product)"
-                    [disabled]="getCantidad(product.id) >= product.stock">
-                    +
+            @if (!isAdmin()) {
+              @if (product.enStock) {
+                @if (getCantidad(product.id) === 0) {
+                  <!-- Estado inicial: botón AGREGAR -->
+                  <button class="btn-agregar" (click)="agregar(product)">
+                    + AGREGAR
                   </button>
-                </div>
+                } @else {
+                  <!-- Estado activo: controles +/- -->
+                  <div class="controles-cantidad">
+                    <button (click)="disminuir(product.id)">−</button>
+                    <span>{{ getCantidad(product.id) }}</span>
+                    <button
+                      (click)="aumentar(product)"
+                      [disabled]="getCantidad(product.id) >= product.stock">
+                      +
+                    </button>
+                  </div>
+                }
+              } @else {
+                <button class="btn-agotado" disabled>AGOTADO</button>
               }
-            } @else {
-              <button class="btn-agotado" disabled>AGOTADO</button>
             }
           </div>
 

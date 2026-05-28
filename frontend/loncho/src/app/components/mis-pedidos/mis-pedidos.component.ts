@@ -5,6 +5,7 @@ import { finalize } from 'rxjs';
 
 import { PedidosService } from '../../core/services/pedidos.service';
 import { AuthService }    from '../../core/services/auth.service';
+import { EmailService }   from '../../core/services/email.service';
 import { Pedido }         from '../../core/models/pedido.model';
 
 @Component({
@@ -17,15 +18,22 @@ import { Pedido }         from '../../core/models/pedido.model';
 export class MisPedidosComponent implements OnInit {
 
   private pedidosService = inject(PedidosService);
-  // AuthService inyectado para futuras extensiones (mostrar nombre, etc.)
   private authService    = inject(AuthService);
+  private emailService   = inject(EmailService);
 
-  // ─── Signals ──────────────────────────────────────────────────────
+  // ─── Signals pedidos ──────────────────────────────────────────────
   pedidos           = signal<Pedido[]>([]);
   loading           = signal(true);
   error             = signal('');
   pedidoCancelando  = signal<number | null>(null);
   confirmarCancelar = signal<number | null>(null);
+
+  // ─── Signals modal email ──────────────────────────────────────────
+  emailEnvio    = signal<number | null>(null);
+  emailDestino  = signal('');
+  enviandoEmail = signal(false);
+  emailExito    = signal('');
+  emailError    = signal('');
 
   // ─── Ciclo de vida ────────────────────────────────────────────────
   ngOnInit(): void {
@@ -48,12 +56,11 @@ export class MisPedidosComponent implements OnInit {
       });
   }
 
-  // ─── Pedir confirmación antes de cancelar ────────────────────────
+  // ─── Cancelación ─────────────────────────────────────────────────
   solicitarCancelacion(id: number): void {
     this.confirmarCancelar.set(id);
   }
 
-  // ─── Confirmar y ejecutar la cancelación ─────────────────────────
   cancelar(id: number): void {
     this.confirmarCancelar.set(null);
     this.pedidoCancelando.set(id);
@@ -70,14 +77,84 @@ export class MisPedidosComponent implements OnInit {
           );
         },
         error: err => {
-          this.error.set(
-            err?.error?.mensaje ?? 'No se pudo cancelar el pedido.'
-          );
+          this.error.set(err?.error?.mensaje ?? 'No se pudo cancelar el pedido.');
         }
       });
   }
 
-  // ─── Color dinámico del badge de status ──────────────────────────
+  // ─── XML helper privado ───────────────────────────────────────────
+  private buildXML(pedido: Pedido): string {
+    const productosXML = pedido.items
+      .map(item => `
+    <producto>
+      <nombre>${item.nombre}</nombre>
+      <cantidad>${item.cantidad}</cantidad>
+      <precio>${Number(item.precio).toFixed(2)}</precio>
+      <subtotal>${Number(item.subtotal).toFixed(2)}</subtotal>
+    </producto>`)
+      .join('');
+
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<recibo>
+  <tienda>Loncho</tienda>
+  <pedido_id>${pedido.id}</pedido_id>
+  <fecha>${pedido.created_at}</fecha>
+  <status>${pedido.status}</status>
+  <productos>${productosXML}
+  </productos>
+  <subtotal>${Number(pedido.subtotal).toFixed(2)}</subtotal>
+  <iva>${Number(pedido.iva).toFixed(2)}</iva>
+  <total>${Number(pedido.total).toFixed(2)}</total>
+</recibo>`;
+  }
+
+  // ─── Descargar recibo XML ─────────────────────────────────────────
+  generarXML(pedido: Pedido): void {
+    const xml  = this.buildXML(pedido);
+    const blob = new Blob([xml], { type: 'application/xml' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `recibo-loncho-${pedido.id}.xml`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ─── Modal email ──────────────────────────────────────────────────
+  abrirEnvioEmail(pedidoId: number): void {
+    this.emailEnvio.set(pedidoId);
+    this.emailDestino.set(this.authService.usuario()?.email ?? '');
+  }
+
+  cerrarEnvioEmail(): void {
+    this.emailEnvio.set(null);
+    this.emailDestino.set('');
+    this.emailExito.set('');
+    this.emailError.set('');
+  }
+
+  enviarXMLPorEmail(pedido: Pedido): void {
+    this.enviandoEmail.set(true);
+    this.emailError.set('');
+    const xmlContent = this.buildXML(pedido);
+
+    this.emailService
+      .enviarRecibo(pedido.id, this.emailDestino(), xmlContent)
+      .pipe(finalize(() => this.enviandoEmail.set(false)))
+      .subscribe({
+        next: res => {
+          if (res.ok) {
+            this.emailExito.set(`Recibo enviado a ${this.emailDestino()}`);
+            setTimeout(() => this.cerrarEnvioEmail(), 3000);
+          } else {
+            this.emailError.set('Error al enviar el correo');
+          }
+        },
+        error: () => this.emailError.set('Error al enviar el correo')
+      });
+  }
+
+  // ─── Badge de status ──────────────────────────────────────────────
   getStatusColor(status: string): string {
     switch (status) {
       case 'COMPLETADO':   return '#22c55e';
@@ -88,14 +165,13 @@ export class MisPedidosComponent implements OnInit {
     }
   }
 
-  // ─── Formatea created_at → dd/MM/yyyy HH:mm ──────────────────────
+  // ─── Formato de fecha ─────────────────────────────────────────────
   formatearFecha(fecha: string): string {
-    const d    = new Date(fecha);
-    const dd   = String(d.getDate()).padStart(2, '0');
-    const mm   = String(d.getMonth() + 1).padStart(2, '0');
-    const yyyy = d.getFullYear();
-    const hh   = String(d.getHours()).padStart(2, '0');
-    const min  = String(d.getMinutes()).padStart(2, '0');
-    return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+    const d   = new Date(fecha);
+    const dd  = String(d.getDate()).padStart(2, '0');
+    const mm  = String(d.getMonth() + 1).padStart(2, '0');
+    const hh  = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `${dd}/${mm}/${d.getFullYear()} ${hh}:${min}`;
   }
 }

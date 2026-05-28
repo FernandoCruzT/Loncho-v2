@@ -14,7 +14,7 @@ async function getProductos(req, res) {
 
 async function updateProducto(req, res) {
   const id = parseInt(req.params.id);
-  const { nombre, precio, stock, descripcion, image_url } = req.body;
+  const { nombre, precio, stock, descripcion } = req.body;
 
   if (precio <= 0) {
     return res.status(400).json({ ok: false, mensaje: 'El precio debe ser mayor a 0' });
@@ -25,10 +25,10 @@ async function updateProducto(req, res) {
 
   await pool.query(
     `UPDATE productos
-     SET nombre=$1, precio=$2, stock=$3, descripcion=$4, image_url=$5,
+     SET nombre=$1, precio=$2, stock=$3, descripcion=$4,
          en_stock=(stock > 0), updated_at=NOW()
-     WHERE id=$6`,
-    [nombre, precio, stock, descripcion, image_url, id]
+     WHERE id=$5`,
+    [nombre, precio, stock, descripcion, id]
   );
 
   return res.json({ ok: true, mensaje: 'Producto actualizado' });

@@ -62,4 +62,43 @@ async function login(req, res) {
   return res.json({ ok: true, token, usuario: { id, nombre, email, rol } });
 }
 
-module.exports = { register, login };
+async function updatePerfil(req, res) {
+  const { id } = req.usuario;
+  const { nombre, passwordActual, passwordNueva } = req.body;
+
+  if (!nombre || !nombre.trim()) {
+    return res.status(400).json({ ok: false, mensaje: 'El nombre es requerido' });
+  }
+
+  const result = await pool.query('SELECT * FROM usuarios WHERE id = $1', [id]);
+  if (result.rows.length === 0) {
+    return res.status(404).json({ ok: false, mensaje: 'Usuario no encontrado' });
+  }
+
+  const usuario = result.rows[0];
+
+  if (passwordNueva) {
+    if (!passwordActual) {
+      return res.status(400).json({ ok: false, mensaje: 'Debes ingresar tu contraseña actual' });
+    }
+    const coincide = await bcrypt.compare(passwordActual, usuario.password);
+    if (!coincide) {
+      return res.status(400).json({ ok: false, mensaje: 'Contraseña actual incorrecta' });
+    }
+    const hash = await bcrypt.hash(passwordNueva, SALT_ROUNDS);
+    await pool.query(
+      'UPDATE usuarios SET nombre=$1, password=$2 WHERE id=$3',
+      [nombre.trim(), hash, id]
+    );
+  } else {
+    await pool.query('UPDATE usuarios SET nombre=$1 WHERE id=$2', [nombre.trim(), id]);
+  }
+
+  const updated = await pool.query(
+    'SELECT id, nombre, email, rol FROM usuarios WHERE id=$1', [id]
+  );
+  const u = updated.rows[0];
+  return res.json({ ok: true, mensaje: 'Perfil actualizado', usuario: u });
+}
+
+module.exports = { register, login, updatePerfil };

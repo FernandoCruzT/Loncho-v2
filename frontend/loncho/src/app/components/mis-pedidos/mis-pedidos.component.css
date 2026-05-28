@@ -306,6 +306,161 @@
   flex-shrink: 0;
 }
 
+/* ── Botones de recibo (XML + email) ─────────────────────────────── */
+.pedido-recibo-btns {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-xml {
+  padding: 0.42rem 0.9rem;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 7px;
+  color: #aaa;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.18s, color 0.18s;
+}
+
+.btn-xml:hover {
+  border-color: #fff;
+  color: #fff;
+}
+
+.btn-email {
+  padding: 0.42rem 0.9rem;
+  background: #111;
+  border: 1px solid #0070ba;
+  border-radius: 7px;
+  color: #60a5fa;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.18s;
+}
+
+.btn-email:hover {
+  background: rgba(0, 112, 186, 0.15);
+}
+
+/* ── Modal de email ──────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.modal-email {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 400px;
+  padding: 1.5rem;
+  width: 100%;
+}
+
+.modal-email h3 {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-email-sub {
+  color: #666;
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.modal-email input[type="email"] {
+  background: #0d0d0d;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  padding: 0.6rem 0.85rem;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal-email input[type="email"]:focus {
+  border-color: #e63030;
+}
+
+.email-exito {
+  color: #22c55e;
+  font-size: 0.83rem;
+  margin: 0;
+}
+
+.email-error {
+  color: #e63030;
+  font-size: 0.83rem;
+  margin: 0;
+}
+
+.modal-email-btns {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.btn-enviar {
+  background: #e63030;
+  border: none;
+  border-radius: 7px;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.55rem 1.2rem;
+  transition: background 0.18s;
+}
+
+.btn-enviar:hover:not(:disabled) {
+  background: #c42020;
+}
+
+.btn-enviar:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-cancelar-email {
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 7px;
+  color: #aaa;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  transition: border-color 0.18s, color 0.18s;
+}
+
+.btn-cancelar-email:hover {
+  border-color: #666;
+  color: #fff;
+}
+
 /* Botón "Cancelar pedido" */
 .btn-cancelar {
   padding: 0.45rem 1.1rem;
@@ -323,6 +478,26 @@
 
 .btn-cancelar:hover {
   background: rgba(230, 48, 48, 0.1);
+}
+
+/* Botón "Descargar Recibo XML" */
+.btn-xml-recibo {
+  padding: 0.45rem 1.1rem;
+  background: transparent;
+  border: 1px solid #22c55e;
+  border-radius: 7px;
+  color: #22c55e;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  transition: background 0.18s;
+  white-space: nowrap;
+}
+
+.btn-xml-recibo:hover {
+  background: rgba(34, 197, 94, 0.1);
 }
 
 /* Spinner inline pequeño */

@@ -39,6 +39,8 @@ export class CatalogoComponent implements OnInit {
   ] as const;
 
   // ─── Computed ────────────────────────────────────────────────────
+  readonly isAdmin            = computed(() => this.authService.isAdmin());
+
   readonly productosFiltrados = computed(() => {
     const cat = this.categoriaActiva();
     if (cat === 'TODOS') return this.products();

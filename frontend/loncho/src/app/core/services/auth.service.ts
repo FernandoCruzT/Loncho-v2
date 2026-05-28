@@ -83,4 +83,10 @@ export class AuthService {
   getToken(): string | null {
     return this._token();
   }
+
+  // ─── Actualizar nombre en memoria y localStorage ──────────────────
+  actualizarNombre(nombre: string): void {
+    this._usuario.update(u => u ? { ...u, nombre } : u);
+    localStorage.setItem('loncho_usuario', JSON.stringify(this._usuario()));
+  }
 }

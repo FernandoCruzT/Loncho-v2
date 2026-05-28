@@ -1,0 +1,107 @@
+<div class="perfil-page">
+  <div class="perfil-card">
+
+    <!-- ── Avatar ────────────────────────────────────────────────── -->
+    <div class="avatar">{{ inicial }}</div>
+
+    <!-- ── Título ────────────────────────────────────────────────── -->
+    <div class="perfil-header">
+      <h1>Mi Perfil</h1>
+      <p class="perfil-sub">Administra tu información personal</p>
+    </div>
+
+    <!-- ── Formulario ────────────────────────────────────────────── -->
+    <form (submit)="guardarPerfil($event)" novalidate class="perfil-form">
+
+      <!-- Nombre -->
+      <div class="campo">
+        <label for="p-nombre">Nombre</label>
+        <input
+          id="p-nombre"
+          type="text"
+          autocomplete="name"
+          [value]="nombre()"
+          (input)="nombre.set($any($event.target).value)"
+          [disabled]="loading()"
+        />
+      </div>
+
+      <!-- Email (solo lectura) -->
+      <div class="campo">
+        <label for="p-email">Correo electrónico</label>
+        <input
+          id="p-email"
+          type="email"
+          [value]="email()"
+          disabled
+          class="input-readonly"
+        />
+        <span class="campo-hint">El correo no se puede cambiar</span>
+      </div>
+
+      <!-- ── Sección contraseña ──────────────────────────────────── -->
+      <div class="seccion-password">
+        <p class="seccion-titulo">Cambiar contraseña</p>
+        <p class="seccion-hint">Deja en blanco si no quieres cambiar tu contraseña</p>
+
+        <div class="campo">
+          <label for="p-pass-actual">Contraseña actual</label>
+          <input
+            id="p-pass-actual"
+            type="password"
+            autocomplete="current-password"
+            [value]="passwordActual()"
+            (input)="passwordActual.set($any($event.target).value)"
+            [disabled]="loading()"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="p-pass-nueva">Contraseña nueva</label>
+          <input
+            id="p-pass-nueva"
+            type="password"
+            autocomplete="new-password"
+            [value]="passwordNueva()"
+            (input)="passwordNueva.set($any($event.target).value)"
+            [disabled]="loading()"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="p-pass-confirm">Confirmar contraseña nueva</label>
+          <input
+            id="p-pass-confirm"
+            type="password"
+            autocomplete="new-password"
+            [value]="confirmarPassword()"
+            (input)="confirmarPassword.set($any($event.target).value)"
+            [disabled]="loading()"
+          />
+        </div>
+      </div>
+
+      <!-- Éxito -->
+      @if (exito()) {
+        <p class="msg-exito" role="status">✓ {{ exito() }}</p>
+      }
+
+      <!-- Error -->
+      @if (error()) {
+        <p class="msg-error" role="alert"><span class="error-icon">⚠</span> {{ error() }}</p>
+      }
+
+      <!-- Botón guardar -->
+      <button type="submit" class="btn-primary" [disabled]="loading()">
+        @if (loading()) {
+          <span class="btn-spinner" aria-hidden="true"></span>
+          Guardando...
+        } @else {
+          Guardar cambios
+        }
+      </button>
+
+    </form>
+
+  </div>
+</div>

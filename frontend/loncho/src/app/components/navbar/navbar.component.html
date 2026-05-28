@@ -19,11 +19,13 @@
       </li>
 
       @if (isLoggedIn()) {
-        <li>
-          <a routerLink="/mis-pedidos" routerLinkActive="active">
-            MIS PEDIDOS
-          </a>
-        </li>
+        @if (!isAdmin()) {
+          <li>
+            <a routerLink="/mis-pedidos" routerLinkActive="active">
+              MIS PEDIDOS
+            </a>
+          </li>
+        }
         @if (isAdmin()) {
           <li>
             <a routerLink="/admin" routerLinkActive="active" style="color:#e63030;font-weight:700;">
@@ -32,7 +34,7 @@
           </li>
         }
         <li>
-          <a routerLink="/mis-pedidos" class="usuario-chip">
+          <a [routerLink]="isAdmin() ? '/admin' : '/perfil'" class="usuario-chip">
             <span class="usuario-icon">👤</span>
             {{ usuario()?.nombre }}
           </a>

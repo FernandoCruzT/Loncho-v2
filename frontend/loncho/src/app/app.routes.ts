@@ -37,6 +37,12 @@ export const routes: Routes = [
       import('./components/mis-pedidos/mis-pedidos.component').then(m => m.MisPedidosComponent)
   },
   {
+    path: 'perfil',
+    canActivate: [authGuard, noAdminGuard],
+    loadComponent: () =>
+      import('./components/perfil/perfil.component').then(m => m.PerfilComponent)
+  },
+  {
     path: 'admin',
     canActivate: [authGuard, adminGuard],
     loadComponent: () =>

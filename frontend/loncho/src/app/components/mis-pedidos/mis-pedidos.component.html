@@ -105,6 +105,14 @@
               </div>
             </div>
 
+            <!-- Botones de recibo (solo si COMPLETADO) -->
+            @if (pedido.status === 'COMPLETADO') {
+              <div class="pedido-recibo-btns">
+                <button class="btn-xml" (click)="generarXML(pedido)">↓ Descargar XML</button>
+                <button class="btn-email" (click)="abrirEnvioEmail(pedido.id)">✉ Enviar por correo</button>
+              </div>
+            }
+
             <!-- Acciones (solo si CREADO) -->
             @if (pedido.status === 'CREADO') {
               <div class="pedido-acciones">
@@ -157,3 +165,34 @@
   }
 
 </div>
+
+<!-- ── Modal envío de correo ─────────────────────────────────────── -->
+@if (emailEnvio()) {
+  <div class="modal-overlay" (click)="cerrarEnvioEmail()">
+    <div class="modal-email" (click)="$event.stopPropagation()">
+      <h3>Enviar recibo por correo</h3>
+      <p class="modal-email-sub">Pedido #{{ emailEnvio() }}</p>
+      <input
+        type="email"
+        placeholder="correo@ejemplo.com"
+        [value]="emailDestino()"
+        (input)="emailDestino.set($any($event.target).value)"
+      />
+      @if (emailExito()) {
+        <p class="email-exito">✓ {{ emailExito() }}</p>
+      }
+      @if (emailError()) {
+        <p class="email-error">⚠ {{ emailError() }}</p>
+      }
+      <div class="modal-email-btns">
+        <button
+          class="btn-enviar"
+          [disabled]="enviandoEmail()"
+          (click)="enviarXMLPorEmail(pedidos()[pedidos().findIndex(p => p.id === emailEnvio())])">
+          {{ enviandoEmail() ? 'Enviando...' : 'Enviar' }}
+        </button>
+        <button class="btn-cancelar-email" (click)="cerrarEnvioEmail()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+}

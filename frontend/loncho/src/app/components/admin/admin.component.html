@@ -88,11 +88,6 @@
                 <textarea rows="2" [value]="editForm().descripcion ?? ''"
                   (input)="setEditField('descripcion', $any($event.target).value)"></textarea>
               </div>
-              <div class="edit-campo">
-                <label>URL imagen</label>
-                <input type="text" [value]="editForm().image_url ?? ''"
-                  (input)="setEditField('image_url', $any($event.target).value)" />
-              </div>
               <div class="edit-acciones">
                 <button class="btn-guardar" [disabled]="guardando()" (click)="guardarProducto()">
                   {{ guardando() ? 'Guardando...' : 'Guardar' }}
