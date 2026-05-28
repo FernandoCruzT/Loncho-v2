@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { authGuard, noAdminGuard } from './core/guards/auth.guard';
+import { adminGuard }              from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -19,12 +20,13 @@ export const routes: Routes = [
   },
   {
     path: 'carrito',
+    canActivate: [noAdminGuard],
     loadComponent: () =>
       import('./components/carrito/carrito.component').then(m => m.CarritoComponent)
   },
   {
     path: 'checkout',
-    canActivate: [authGuard],
+    canActivate: [authGuard, noAdminGuard],
     loadComponent: () =>
       import('./components/checkout/checkout.component').then(m => m.CheckoutComponent)
   },
@@ -33,6 +35,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./components/mis-pedidos/mis-pedidos.component').then(m => m.MisPedidosComponent)
+  },
+  {
+    path: 'admin',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./components/admin/admin.component').then(m => m.AdminComponent)
   },
   {
     path: '**',

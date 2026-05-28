@@ -1,0 +1,152 @@
+<div class="admin-page">
+
+  <!-- ── Header ─────────────────────────────────────────────────────── -->
+  <div class="admin-header">
+    <h1 class="admin-title">Panel de Administración</h1>
+
+    <div class="tabs">
+      <button class="tab" [class.active]="tab() === 'productos'" (click)="tab.set('productos')">
+        Productos
+      </button>
+      <button class="tab" [class.active]="tab() === 'usuarios'" (click)="tab.set('usuarios')">
+        Usuarios
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Loading ────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading-state">Cargando datos...</div>
+  }
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- TAB: PRODUCTOS                                                   -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  @if (!loading() && tab() === 'productos') {
+
+    @if (exito()) {
+      <div class="toast toast-exito">{{ exito() }}</div>
+    }
+    @if (error()) {
+      <div class="toast toast-error">{{ error() }}</div>
+    }
+
+    <div class="productos-grid">
+      @for (producto of productos(); track producto.id) {
+        <div class="producto-card" [class.editando]="editando() === producto.id">
+
+          <!-- Imagen -->
+          <img class="producto-img" [src]="producto.image_url" [alt]="producto.nombre" />
+
+          <!-- Vista normal -->
+          @if (editando() !== producto.id) {
+            <div class="producto-info">
+              <div class="producto-nombre">{{ producto.nombre }}</div>
+              <div class="producto-categoria">{{ producto.categoria }}</div>
+              <div class="producto-meta">
+                <span class="precio">${{ producto.precio | number:'1.2-2' }}</span>
+                <span class="stock">Stock: {{ producto.stock }}</span>
+                <span class="badge-stock" [class.activo]="producto.en_stock" [class.inactivo]="!producto.en_stock">
+                  {{ producto.en_stock ? 'En stock' : 'Sin stock' }}
+                </span>
+              </div>
+              <div class="producto-acciones">
+                <button class="btn-editar" (click)="editarProducto(producto)">Editar</button>
+                <button
+                  class="btn-toggle"
+                  [class.btn-desactivar]="producto.en_stock"
+                  [class.btn-activar]="!producto.en_stock"
+                  (click)="toggleStock(producto)">
+                  {{ producto.en_stock ? 'Desactivar' : 'Activar' }}
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Vista edición -->
+          @if (editando() === producto.id && editForm()) {
+            <div class="edit-form">
+              <div class="edit-campo">
+                <label>Nombre</label>
+                <input type="text" [value]="editForm().nombre"
+                  (input)="setEditField('nombre', $any($event.target).value)" />
+              </div>
+              <div class="edit-fila">
+                <div class="edit-campo">
+                  <label>Precio</label>
+                  <input type="number" min="1" [value]="editForm().precio"
+                    (input)="setEditField('precio', +$any($event.target).value)" />
+                </div>
+                <div class="edit-campo">
+                  <label>Stock</label>
+                  <input type="number" min="0" [value]="editForm().stock"
+                    (input)="setEditField('stock', +$any($event.target).value)" />
+                </div>
+              </div>
+              <div class="edit-campo">
+                <label>Descripción</label>
+                <textarea rows="2" [value]="editForm().descripcion ?? ''"
+                  (input)="setEditField('descripcion', $any($event.target).value)"></textarea>
+              </div>
+              <div class="edit-campo">
+                <label>URL imagen</label>
+                <input type="text" [value]="editForm().image_url ?? ''"
+                  (input)="setEditField('image_url', $any($event.target).value)" />
+              </div>
+              <div class="edit-acciones">
+                <button class="btn-guardar" [disabled]="guardando()" (click)="guardarProducto()">
+                  {{ guardando() ? 'Guardando...' : 'Guardar' }}
+                </button>
+                <button class="btn-cancelar" [disabled]="guardando()" (click)="cancelarEdicion()">
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- TAB: USUARIOS                                                    -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  @if (!loading() && tab() === 'usuarios') {
+    <div class="tabla-wrapper">
+      <table class="tabla-usuarios">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Términos</th>
+            <th>Fecha registro</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of usuarios(); track u.id) {
+            <tr>
+              <td class="td-id">{{ u.id }}</td>
+              <td>{{ u.nombre }}</td>
+              <td class="td-email">{{ u.email }}</td>
+              <td>
+                <span class="badge-rol" [class.rol-admin]="u.rol === 'admin'" [class.rol-usuario]="u.rol !== 'admin'">
+                  {{ u.rol }}
+                </span>
+              </td>
+              <td>
+                <span class="badge-terminos" [class.terminos-ok]="u.terminos_aceptados" [class.terminos-no]="!u.terminos_aceptados">
+                  {{ u.terminos_aceptados ? '✓' : '✗' }}
+                </span>
+              </td>
+              <td class="td-fecha">{{ u.created_at | date:'dd/MM/yyyy' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+</div>

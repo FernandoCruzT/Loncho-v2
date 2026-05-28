@@ -248,10 +248,152 @@
   text-decoration: underline;
 }
 
+/* ── Checkbox de términos ────────────────────────────────────────── */
+.campo-terminos {
+  gap: 0;
+}
+
+.terminos-label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  font-size: 0.83rem;
+  color: #888;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.terminos-label input[type="checkbox"] {
+  accent-color: #e63030;
+  cursor: pointer;
+  flex-shrink: 0;
+  height: 15px;
+  width: 15px;
+}
+
+.link-tyc {
+  background: none;
+  border: none;
+  color: #e63030;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 700;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.link-tyc:hover {
+  color: #ff5555;
+}
+
+/* ── Modales ─────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.modal-box {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 12px;
+  max-height: 80vh;
+  max-width: 560px;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+  width: 100%;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.25rem;
+  position: absolute;
+  right: 1.25rem;
+  top: 1.25rem;
+  transition: color 0.15s;
+}
+
+.modal-close:hover {
+  color: #fff;
+}
+
+.modal-box h2 {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  padding-right: 2rem;
+}
+
+.modal-content p {
+  color: #aaa;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin-bottom: 0.9rem;
+}
+
+.modal-content strong {
+  color: #ddd;
+}
+
+/* ── Toast de confirmación ───────────────────────────────────────── */
+.toast-confirm {
+  align-items: center;
+  animation: toastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: #111;
+  border: 1px solid #222;
+  border-left: 4px solid #22c55e;
+  border-radius: 8px;
+  bottom: 2rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  color: #22c55e;
+  display: flex;
+  font-size: 0.87rem;
+  font-weight: 600;
+  gap: 0.6rem;
+  min-width: 240px;
+  padding: 0.75rem 1.1rem;
+  position: fixed;
+  right: 2rem;
+  z-index: 3000;
+}
+
+.toast-check {
+  flex-shrink: 0;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 /* ── Responsive ──────────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .auth-card {
     border-radius: 12px;
     padding: 2rem 1.25rem 1.5rem;
+  }
+
+  .toast-confirm {
+    right: 1rem;
+    left: 1rem;
+    bottom: 1.5rem;
+    min-width: unset;
   }
 }

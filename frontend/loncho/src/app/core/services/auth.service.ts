@@ -7,6 +7,7 @@ interface Usuario {
   id: number;
   nombre: string;
   email: string;
+  rol: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -18,6 +19,7 @@ export class AuthService {
 
   // ─── Computed públicos ────────────────────────────────────────────
   readonly isLoggedIn = computed(() => !!this._token());
+  readonly isAdmin    = computed(() => this._usuario()?.rol === 'admin');
   readonly usuario    = this._usuario.asReadonly();
 
   constructor(private http: HttpClient) {
@@ -56,7 +58,7 @@ export class AuthService {
   // ─── Register ─────────────────────────────────────────────────────
   register(nombre: string, email: string, password: string): Observable<any> {
     return this.http
-      .post<any>(`${environment.apiUrl}/auth/register`, { nombre, email, password })
+      .post<any>(`${environment.apiUrl}/auth/register`, { nombre, email, password, terminos_aceptados: true })
       .pipe(
         tap(res => {
           if (res.ok) {

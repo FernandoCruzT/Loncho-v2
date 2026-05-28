@@ -10,11 +10,18 @@ function verifyToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.usuario   = { id: decoded.id, nombre: decoded.nombre, email: decoded.email };
+    req.usuario   = { id: decoded.id, nombre: decoded.nombre, email: decoded.email, rol: decoded.rol };
     next();
   } catch {
     return res.status(401).json({ ok: false, mensaje: 'Token inválido' });
   }
 }
 
-module.exports = { verifyToken };
+function adminOnly(req, res, next) {
+  if (req.usuario.rol !== 'admin') {
+    return res.status(403).json({ ok: false, mensaje: 'Acceso restringido a administradores' });
+  }
+  next();
+}
+
+module.exports = { verifyToken, adminOnly };

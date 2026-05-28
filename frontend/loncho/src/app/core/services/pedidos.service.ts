@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Pedido } from '../models/pedido.model';
 import { AuthService } from './auth.service';
@@ -24,9 +25,9 @@ export class PedidosService {
 
   // ─── GET historial de pedidos del usuario ─────────────────────────
   getPedidos(): Observable<Pedido[]> {
-    return this.http.get<Pedido[]>(this.apiUrl, {
+    return this.http.get<{ ok: boolean; datos: Pedido[] }>(this.apiUrl, {
       headers: this.getHeaders()
-    });
+    }).pipe(map(res => res.datos));
   }
 
   // ─── PATCH cancelar pedido ────────────────────────────────────────

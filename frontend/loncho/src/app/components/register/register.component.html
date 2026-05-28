@@ -58,6 +58,38 @@
         />
       </div>
 
+      <!-- Términos y condiciones -->
+      <div class="campo campo-terminos">
+        <label class="terminos-label">
+          <input
+            type="checkbox"
+            [checked]="terminos()"
+            (change)="onTerminosChange($any($event.target).checked)"
+            [disabled]="loading()"
+          />
+          He leído y acepto los
+          <button type="button" class="link-tyc" (click)="mostrarTyC.set(true)">
+            términos y condiciones
+          </button>
+        </label>
+      </div>
+
+      <!-- Aviso de privacidad -->
+      <div class="campo campo-terminos">
+        <label class="terminos-label">
+          <input
+            type="checkbox"
+            [checked]="privacidad()"
+            (change)="onPrivacidadChange($any($event.target).checked)"
+            [disabled]="loading()"
+          />
+          He leído y acepto el
+          <button type="button" class="link-tyc" (click)="mostrarPrivacidad.set(true)">
+            aviso de privacidad
+          </button>
+        </label>
+      </div>
+
       <!-- Error -->
       @if (error()) {
         <p class="msg-error" role="alert">
@@ -66,7 +98,7 @@
       }
 
       <!-- Botón principal -->
-      <button type="submit" class="btn-primary" [disabled]="loading()">
+      <button type="submit" class="btn-primary" [disabled]="loading() || !terminos() || !privacidad()">
         @if (loading()) {
           <span class="btn-spinner" aria-hidden="true"></span>
           Creando cuenta...
@@ -95,3 +127,96 @@
 
   </div>
 </div>
+
+<!-- ── Modal Términos y condiciones ──────────────────────────── -->
+@if (mostrarTyC()) {
+  <div class="modal-overlay" (click)="mostrarTyC.set(false)">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="mostrarTyC.set(false)">✕</button>
+      <h2>Términos y condiciones</h2>
+      <div class="modal-content">
+        <p><strong>1. Aceptación</strong><br>
+        Al usar Loncho aceptas estos términos. Si no los aceptas, no uses el servicio.</p>
+
+        <p><strong>2. Uso del servicio</strong><br>
+        Loncho es una plataforma de venta de productos. Solo puedes usar el servicio para
+        compras legales y en conformidad con la legislación mexicana aplicable.</p>
+
+        <p><strong>3. Cuentas de usuario</strong><br>
+        Eres responsable de mantener la confidencialidad de tu contraseña y de todas las
+        actividades realizadas desde tu cuenta.</p>
+
+        <p><strong>4. Precios y pagos</strong><br>
+        Todos los precios incluyen IVA. El pago se procesa de forma segura mediante PayPal.
+        Loncho se reserva el derecho de modificar precios sin previo aviso.</p>
+
+        <p><strong>5. Envíos</strong><br>
+        Los tiempos de entrega son estimados. Loncho no se hace responsable por retrasos
+        atribuibles a terceros o causas de fuerza mayor.</p>
+
+        <p><strong>6. Devoluciones</strong><br>
+        Puedes solicitar devolución dentro de los 15 días naturales posteriores a la recepción
+        del producto, siempre que esté en su empaque original.</p>
+
+        <p><strong>7. Modificaciones</strong><br>
+        Estos términos pueden cambiar. Notificaremos cambios relevantes por correo electrónico.</p>
+
+        <p><strong>Última actualización:</strong> enero 2025.</p>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Modal Aviso de privacidad ─────────────────────────────── -->
+@if (mostrarPrivacidad()) {
+  <div class="modal-overlay" (click)="mostrarPrivacidad.set(false)">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="mostrarPrivacidad.set(false)">✕</button>
+      <h2>Aviso de privacidad</h2>
+      <div class="modal-content">
+        <p><strong>Responsable</strong><br>
+        Loncho, con domicilio en Ciudad de México, es responsable del tratamiento de tus
+        datos personales conforme a la Ley Federal de Protección de Datos Personales en
+        Posesión de los Particulares (LFPDPPP).</p>
+
+        <p><strong>Datos que recabamos</strong><br>
+        Nombre, correo electrónico, dirección de entrega e historial de compras.</p>
+
+        <p><strong>Finalidad</strong><br>
+        Procesar tus pedidos, enviarte confirmaciones de compra y, con tu consentimiento,
+        enviarte promociones y novedades del catálogo.</p>
+
+        <p><strong>Transferencia de datos</strong><br>
+        Tus datos no se transfieren a terceros salvo por obligación legal o para cumplir
+        con el servicio de pago (PayPal) y logística de envíos.</p>
+
+        <p><strong>Derechos ARCO</strong><br>
+        Puedes ejercer tus derechos de Acceso, Rectificación, Cancelación u Oposición
+        escribiendo a <strong>privacidad&#64;loncho.mx</strong>.</p>
+
+        <p><strong>Cookies</strong><br>
+        Usamos cookies esenciales para el funcionamiento del sitio. No usamos cookies de
+        rastreo de terceros.</p>
+
+        <p><strong>Permisos del Administrador</strong><br>
+        El usuario con rol administrador tiene acceso a: ver el catálogo de productos y
+        modificar nombre, precio, stock, descripción e imagen URL; activar o desactivar
+        productos del catálogo; ver el listado completo de usuarios registrados incluyendo
+        nombre, email, rol, aceptación de términos y fecha de registro; ver todos los
+        pedidos del sistema. El administrador NO puede: realizar compras, acceder al
+        carrito ni al checkout, modificar o eliminar usuarios, cancelar pedidos de otros
+        usuarios.</p>
+
+        <p><strong>Última actualización:</strong> enero 2025.</p>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Toast confirmación ─────────────────────────────────────── -->
+@if (toastVisible()) {
+  <div class="toast-confirm" role="alert">
+    <span class="toast-check">✓</span>
+    {{ toastMsg() }}
+  </div>
+}

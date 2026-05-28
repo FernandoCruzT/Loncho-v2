@@ -6,17 +6,21 @@ const SALT_ROUNDS = 10;
 
 function signToken(usuario) {
   return jwt.sign(
-    { id: usuario.id, nombre: usuario.nombre, email: usuario.email },
+    { id: usuario.id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol },
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
   );
 }
 
 async function register(req, res) {
-  const { nombre, email, password } = req.body;
+  const { nombre, email, password, terminos_aceptados } = req.body;
 
   if (!nombre || !email || !password) {
     return res.status(400).json({ ok: false, mensaje: 'nombre, email y password son requeridos' });
+  }
+
+  if (terminos_aceptados !== true) {
+    return res.status(400).json({ ok: false, mensaje: 'Debes aceptar los términos y condiciones' });
   }
 
   const existe = await pool.query('SELECT id FROM usuarios WHERE email = $1', [email]);
@@ -27,14 +31,14 @@ async function register(req, res) {
   const hash = await bcrypt.hash(password, SALT_ROUNDS);
 
   const result = await pool.query(
-    'INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3) RETURNING id, nombre, email',
+    'INSERT INTO usuarios (nombre, email, password, terminos_aceptados) VALUES ($1, $2, $3, true) RETURNING id, nombre, email, rol',
     [nombre, email, hash]
   );
 
   const usuario = result.rows[0];
   const token   = signToken(usuario);
 
-  return res.status(201).json({ ok: true, token, usuario });
+  return res.status(201).json({ ok: true, token, usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol } });
 }
 
 async function login(req, res) {
@@ -52,10 +56,10 @@ async function login(req, res) {
     return res.status(401).json({ ok: false, mensaje: 'Credenciales incorrectas' });
   }
 
-  const { id, nombre } = usuario;
-  const token = signToken({ id, nombre, email });
+  const { id, nombre, rol } = usuario;
+  const token = signToken({ id, nombre, email, rol });
 
-  return res.json({ ok: true, token, usuario: { id, nombre, email } });
+  return res.json({ ok: true, token, usuario: { id, nombre, email, rol } });
 }
 
 module.exports = { register, login };

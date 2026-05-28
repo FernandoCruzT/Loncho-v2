@@ -20,6 +20,7 @@ export class NavbarComponent {
 
   // ─── Computed públicos ────────────────────────────────────────────
   readonly isLoggedIn      = computed(() => this.authService.isLoggedIn());
+  readonly isAdmin         = computed(() => this.authService.isAdmin());
   readonly usuario         = computed(() => this.authService.usuario());
   readonly cantidadCarrito = computed(() => this.carritoService.cantidadTotal());
 

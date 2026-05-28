@@ -10,6 +10,16 @@ export const authGuard: CanActivateFn = () => {
     return true;
   }
 
-  // No autenticado → redirigir al login
   return router.createUrlTree(['/login']);
+};
+
+export const noAdminGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router      = inject(Router);
+
+  if (authService.isAdmin()) {
+    return router.createUrlTree(['/admin']);
+  }
+
+  return true;
 };

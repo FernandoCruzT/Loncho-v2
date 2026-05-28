@@ -67,6 +67,9 @@
             <p class="producto-precio">
               MX${{ product.precio | number:'1.2-2' }}
             </p>
+            @if (product.descripcion) {
+              <p class="producto-descripcion">{{ product.descripcion }}</p>
+            }
             <p class="producto-stock">
               @if (product.enStock) {
                 {{ product.stock }} disponibles

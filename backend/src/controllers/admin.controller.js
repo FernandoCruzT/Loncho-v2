@@ -1,0 +1,59 @@
+const pool = require('../config/db');
+
+async function getUsuarios(req, res) {
+  const result = await pool.query(
+    'SELECT id, nombre, email, rol, terminos_aceptados, created_at FROM usuarios ORDER BY created_at DESC'
+  );
+  return res.json({ ok: true, datos: result.rows });
+}
+
+async function getProductos(req, res) {
+  const result = await pool.query('SELECT * FROM productos ORDER BY id');
+  return res.json({ ok: true, datos: result.rows });
+}
+
+async function updateProducto(req, res) {
+  const id = parseInt(req.params.id);
+  const { nombre, precio, stock, descripcion, image_url } = req.body;
+
+  if (precio <= 0) {
+    return res.status(400).json({ ok: false, mensaje: 'El precio debe ser mayor a 0' });
+  }
+  if (stock < 0) {
+    return res.status(400).json({ ok: false, mensaje: 'El stock no puede ser negativo' });
+  }
+
+  await pool.query(
+    `UPDATE productos
+     SET nombre=$1, precio=$2, stock=$3, descripcion=$4, image_url=$5,
+         en_stock=(stock > 0), updated_at=NOW()
+     WHERE id=$6`,
+    [nombre, precio, stock, descripcion, image_url, id]
+  );
+
+  return res.json({ ok: true, mensaje: 'Producto actualizado' });
+}
+
+async function toggleStock(req, res) {
+  const id = parseInt(req.params.id);
+  const { en_stock } = req.body;
+
+  if (!en_stock) {
+    await pool.query('UPDATE productos SET en_stock=false WHERE id=$1', [id]);
+    return res.json({ ok: true, mensaje: 'Stock actualizado' });
+  }
+
+  const result = await pool.query('SELECT stock FROM productos WHERE id=$1', [id]);
+  if (result.rows.length === 0) {
+    return res.status(404).json({ ok: false, mensaje: 'Producto no encontrado' });
+  }
+
+  if (result.rows[0].stock === 0) {
+    return res.status(400).json({ ok: false, mensaje: 'No puedes activar un producto sin stock' });
+  }
+
+  await pool.query('UPDATE productos SET en_stock=true WHERE id=$1', [id]);
+  return res.json({ ok: true, mensaje: 'Stock actualizado' });
+}
+
+module.exports = { getUsuarios, getProductos, updateProducto, toggleStock };

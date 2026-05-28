@@ -1,0 +1,393 @@
+/* ── Layout general ──────────────────────────────────────────────── */
+.admin-page {
+  min-height: 100vh;
+  background: #0d0d0d;
+  color: #eee;
+  padding: 2rem 1.5rem 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+.admin-header {
+  margin-bottom: 2rem;
+}
+
+.admin-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+  color: #fff;
+}
+
+/* ── Tabs ─────────────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #222;
+}
+
+.tab {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.6rem 1.4rem;
+  margin-bottom: -1px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tab.active {
+  color: #fff;
+  border-bottom-color: #e63030;
+}
+
+.tab:hover:not(.active) {
+  color: #ccc;
+}
+
+/* ── Loading ─────────────────────────────────────────────────────── */
+.loading-state {
+  color: #888;
+  text-align: center;
+  padding: 3rem;
+}
+
+/* ── Toasts ──────────────────────────────────────────────────────── */
+.toast {
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+}
+
+.toast-exito {
+  background: #0d2b0d;
+  border: 1px solid #22c55e;
+  color: #22c55e;
+}
+
+.toast-error {
+  background: #2b0d0d;
+  border: 1px solid #e63030;
+  color: #e63030;
+}
+
+/* ── Grid productos ──────────────────────────────────────────────── */
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .productos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Tarjeta producto ────────────────────────────────────────────── */
+.producto-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 8px;
+  display: flex;
+  gap: 0.875rem;
+  padding: 0.875rem;
+  transition: border-color 0.2s;
+}
+
+.producto-card.editando {
+  border-color: #e63030;
+  flex-direction: column;
+}
+
+.producto-img {
+  border-radius: 4px;
+  flex-shrink: 0;
+  height: 60px;
+  object-fit: cover;
+  width: 60px;
+}
+
+.producto-card.editando .producto-img {
+  display: none;
+}
+
+/* ── Info producto ───────────────────────────────────────────────── */
+.producto-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.producto-nombre {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.producto-categoria {
+  color: #e63030;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.producto-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+}
+
+.precio {
+  color: #fff;
+  font-weight: 600;
+}
+
+.stock {
+  color: #888;
+}
+
+.badge-stock {
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  text-transform: uppercase;
+}
+
+.badge-stock.activo {
+  background: #0d2b0d;
+  color: #22c55e;
+}
+
+.badge-stock.inactivo {
+  background: #2b2b2b;
+  color: #888;
+}
+
+/* ── Botones de acción en tarjeta ────────────────────────────────── */
+.producto-acciones {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.btn-editar,
+.btn-toggle,
+.btn-guardar,
+.btn-cancelar {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: opacity 0.15s;
+}
+
+.btn-editar {
+  background: #1a3a5c;
+  color: #60a5fa;
+}
+
+.btn-toggle.btn-desactivar {
+  background: #2b1a1a;
+  color: #e63030;
+}
+
+.btn-toggle.btn-activar {
+  background: #0d2b0d;
+  color: #22c55e;
+}
+
+.btn-guardar {
+  background: #0d2b0d;
+  color: #22c55e;
+}
+
+.btn-cancelar {
+  background: #222;
+  color: #888;
+}
+
+.btn-editar:hover,
+.btn-toggle:hover,
+.btn-guardar:hover,
+.btn-cancelar:hover {
+  opacity: 0.8;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* ── Formulario edición ──────────────────────────────────────────── */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.edit-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.edit-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.edit-campo label {
+  color: #888;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.edit-campo input,
+.edit-campo textarea {
+  background: #0d0d0d;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #eee;
+  font-size: 0.875rem;
+  padding: 0.4rem 0.6rem;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.edit-campo input:focus,
+.edit-campo textarea:focus {
+  border-color: #e63030;
+}
+
+.edit-acciones {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+/* ── Tabla usuarios ──────────────────────────────────────────────── */
+.tabla-wrapper {
+  overflow-x: auto;
+}
+
+.tabla-usuarios {
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.tabla-usuarios th {
+  background: #111;
+  border-bottom: 1px solid #333;
+  color: #888;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tabla-usuarios td {
+  border-bottom: 1px solid #1a1a1a;
+  color: #ccc;
+  padding: 0.65rem 1rem;
+  vertical-align: middle;
+}
+
+.tabla-usuarios tbody tr:nth-child(even) td {
+  background: #0f0f0f;
+}
+
+.tabla-usuarios tbody tr:hover td {
+  background: #161616;
+}
+
+.td-id {
+  color: #555;
+  font-size: 0.8rem;
+  width: 40px;
+}
+
+.td-email {
+  color: #aaa;
+  font-size: 0.82rem;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-fecha {
+  color: #666;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+/* ── Badges de tabla ─────────────────────────────────────────────── */
+.badge-rol {
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.5rem;
+  text-transform: uppercase;
+}
+
+.rol-admin {
+  background: #2b0d0d;
+  color: #e63030;
+}
+
+.rol-usuario {
+  background: #1a1a1a;
+  color: #888;
+}
+
+.badge-terminos {
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+}
+
+.terminos-ok {
+  background: #0d2b0d;
+  color: #22c55e;
+}
+
+.terminos-no {
+  background: #2b1a1a;
+  color: #e63030;
+}

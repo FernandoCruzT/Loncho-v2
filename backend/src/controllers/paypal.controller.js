@@ -3,16 +3,26 @@ const pool          = require('../config/db');
 
 async function createOrder(req, res) {
   const { items, subtotal, iva, total } = req.body;
-
-  const order = await paypalService.createOrder(items, subtotal, iva, total);
-  return res.json({ ok: true, orderID: order.id });
+  try {
+    const order = await paypalService.createOrder(items, subtotal, iva, total);
+    return res.json({ ok: true, orderID: order.id });
+  } catch (err) {
+    console.error('Error en createOrder PayPal:', err);
+    return res.status(500).json({ ok: false, mensaje: 'Error al conectar con PayPal' });
+  }
 }
 
 async function captureOrder(req, res) {
   const { orderId, items, subtotal, iva, total } = req.body;
   const { id: usuario_id }                       = req.usuario;
 
-  const capture = await paypalService.captureOrder(orderId);
+  let capture;
+  try {
+    capture = await paypalService.captureOrder(orderId);
+  } catch (err) {
+    console.error('Error al capturar pago PayPal:', err);
+    return res.status(500).json({ ok: false, mensaje: 'Error al conectar con PayPal' });
+  }
 
   if (capture.status !== 'COMPLETED') {
     return res.status(400).json({ ok: false, mensaje: 'Pago no completado' });
@@ -23,8 +33,8 @@ async function captureOrder(req, res) {
     await client.query('BEGIN');
 
     const pedidoResult = await client.query(
-      `INSERT INTO pedidos (usuario_id, subtotal, iva, total, paypal_order_id, paypal_status)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO pedidos (usuario_id, status, subtotal, iva, total, paypal_order_id, paypal_status)
+       VALUES ($1, 'COMPLETADO', $2, $3, $4, $5, $6)
        RETURNING id`,
       [usuario_id, subtotal, iva, total, orderId, capture.status]
     );
