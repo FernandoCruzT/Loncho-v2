@@ -58,17 +58,7 @@ export class AuthService {
   // ─── Register ─────────────────────────────────────────────────────
   register(nombre: string, email: string, password: string): Observable<any> {
     return this.http
-      .post<any>(`${environment.apiUrl}/auth/register`, { nombre, email, password, terminos_aceptados: true })
-      .pipe(
-        tap(res => {
-          if (res.ok) {
-            localStorage.setItem('loncho_token',   res.token);
-            localStorage.setItem('loncho_usuario', JSON.stringify(res.usuario));
-            this._token.set(res.token);
-            this._usuario.set(res.usuario);
-          }
-        })
-      );
+      .post<any>(`${environment.apiUrl}/auth/register`, { nombre, email, password, terminos_aceptados: true });
   }
 
   // ─── Logout ───────────────────────────────────────────────────────

@@ -17,7 +17,6 @@ export class RegisterComponent {
   private authService = inject(AuthService);
   private router      = inject(Router);
 
-  // ─── Signals del formulario ───────────────────────────────────────
   nombre            = signal('');
   email             = signal('');
   password          = signal('');
@@ -27,15 +26,14 @@ export class RegisterComponent {
   mostrarPrivacidad = signal(false);
   error             = signal('');
   loading           = signal(false);
+  registroExitoso   = signal(false);
+  emailRegistrado   = signal('');
 
-  // ─── Toast de confirmación ────────────────────────────────────────
   toastMsg     = signal('');
   toastVisible = signal(false);
 
-  // ─── Validación de email ─────────────────────────────────────────
   private readonly EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // ─── Handlers checkboxes con toast ───────────────────────────────
   onTerminosChange(checked: boolean): void {
     this.terminos.set(checked);
     if (checked) this.mostrarToastConfirm('Términos y condiciones aceptados');
@@ -52,7 +50,10 @@ export class RegisterComponent {
     setTimeout(() => this.toastVisible.set(false), 2500);
   }
 
-  // ─── Submit ───────────────────────────────────────────────────────
+  irAlLogin(): void {
+    this.router.navigate(['/login']);
+  }
+
   onSubmit(event: Event): void {
     event.preventDefault();
 
@@ -84,8 +85,9 @@ export class RegisterComponent {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: res => {
-          if (res.ok) {
-            this.router.navigate(['/']);
+          if (res.ok && res.requiresVerification) {
+            this.emailRegistrado.set(this.email().trim());
+            this.registroExitoso.set(true);
           } else {
             this.error.set(res.mensaje ?? 'No se pudo crear la cuenta.');
           }

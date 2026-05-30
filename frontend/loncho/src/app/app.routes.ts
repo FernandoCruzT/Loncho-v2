@@ -38,7 +38,7 @@ export const routes: Routes = [
   },
   {
     path: 'perfil',
-    canActivate: [authGuard, noAdminGuard],
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./components/perfil/perfil.component').then(m => m.PerfilComponent)
   },

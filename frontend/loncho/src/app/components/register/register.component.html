@@ -7,13 +7,26 @@
       <span class="logo-text">LONCHO</span>
     </a>
 
-    <!-- ── Título ────────────────────────────────────────────────── -->
+    <!-- ── Pantalla de éxito post-registro ───────────────────────── -->
+    @if (registroExitoso()) {
+      <div class="auth-header">
+        <h1>¡Registro exitoso!</h1>
+        <p class="auth-sub">Revisa tu correo para verificar tu cuenta</p>
+      </div>
+      <div class="msg-verificacion">
+        <p>Te enviamos un correo a <strong>{{ emailRegistrado() }}</strong>.</p>
+        <p>Haz click en el enlace del correo para activar tu cuenta antes de iniciar sesión.</p>
+      </div>
+      <button class="btn-primary" (click)="irAlLogin()">Ir al login</button>
+    }
+
+    <!-- ── Formulario ────────────────────────────────────────────── -->
+    @if (!registroExitoso()) {
     <div class="auth-header">
       <h1>Crear cuenta</h1>
       <p class="auth-sub">Únete a Loncho</p>
     </div>
 
-    <!-- ── Formulario ────────────────────────────────────────────── -->
     <form (submit)="onSubmit($event)" novalidate class="auth-form">
 
       <!-- Nombre -->
@@ -124,6 +137,8 @@
       ¿Ya tienes cuenta?
       <a routerLink="/login">Inicia sesión</a>
     </p>
+
+    }
 
   </div>
 </div>

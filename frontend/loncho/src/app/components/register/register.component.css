@@ -1,3 +1,19 @@
+/* ── Mensaje verificación ────────────────────────────────────────── */
+.msg-verificacion {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: #bbb;
+  line-height: 1.6;
+}
+
+.msg-verificacion p { margin: 0 0 0.5rem; }
+.msg-verificacion p:last-child { margin-bottom: 0; }
+.msg-verificacion strong { color: #eee; }
+
 /* ── Página centrada ─────────────────────────────────────────────── */
 .auth-page {
   min-height: calc(100vh - 64px - 80px);
