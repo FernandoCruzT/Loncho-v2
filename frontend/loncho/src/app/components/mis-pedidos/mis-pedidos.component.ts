@@ -35,6 +35,10 @@ export class MisPedidosComponent implements OnInit {
   emailExito    = signal('');
   emailError    = signal('');
 
+  // ─── Toast envío ──────────────────────────────────────────────────
+  toastEnvio        = signal('');
+  toastEnvioVisible = signal(false);
+
   // ─── Ciclo de vida ────────────────────────────────────────────────
   ngOnInit(): void {
     this.cargarPedidos();
@@ -136,6 +140,8 @@ export class MisPedidosComponent implements OnInit {
   enviarXMLPorEmail(pedido: Pedido): void {
     this.enviandoEmail.set(true);
     this.emailError.set('');
+    this.toastEnvioVisible.set(true);
+    this.toastEnvio.set('Enviando recibo...');
     const xmlContent = this.buildXML(pedido);
 
     this.emailService
@@ -145,12 +151,19 @@ export class MisPedidosComponent implements OnInit {
         next: res => {
           if (res.ok) {
             this.emailExito.set(`Recibo enviado a ${this.emailDestino()}`);
-            setTimeout(() => this.cerrarEnvioEmail(), 3000);
+            this.toastEnvio.set('✓ Recibo enviado a ' + this.emailDestino());
+            setTimeout(() => { this.toastEnvioVisible.set(false); this.cerrarEnvioEmail(); }, 3000);
           } else {
             this.emailError.set('Error al enviar el correo');
+            this.toastEnvio.set('Error al enviar el correo');
+            setTimeout(() => this.toastEnvioVisible.set(false), 3000);
           }
         },
-        error: () => this.emailError.set('Error al enviar el correo')
+        error: () => {
+          this.emailError.set('Error al enviar el correo');
+          this.toastEnvio.set('Error al enviar el correo');
+          setTimeout(() => this.toastEnvioVisible.set(false), 3000);
+        }
       });
   }
 

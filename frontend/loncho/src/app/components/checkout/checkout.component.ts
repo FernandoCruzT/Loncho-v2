@@ -40,9 +40,10 @@ export class CheckoutComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly total    = this.carritoService.total;
 
   // ─── Signals locales ──────────────────────────────────────────────
-  cargando    = signal(false);
-  error       = signal('');
-  pagoExitoso = signal<any>(null);
+  cargando       = signal(false);
+  error          = signal('');
+  pagoExitoso    = signal<any>(null);
+  reciboEnviado  = signal(false);
 
   // ─── Referencia al script para limpiarlo en destroy ───────────────
   private paypalScript: HTMLScriptElement | null = null;
@@ -126,6 +127,7 @@ export class CheckoutComponent implements OnInit, AfterViewInit, OnDestroy {
 
           if (res.ok) {
             this.pagoExitoso.set(res);
+            this.reciboEnviado.set(true);
             this.carritoService.vaciar();
           } else {
             this.error.set('El pago no pudo completarse. Intenta de nuevo.');

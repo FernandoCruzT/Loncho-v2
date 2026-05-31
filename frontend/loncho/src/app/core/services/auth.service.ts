@@ -61,6 +61,27 @@ export class AuthService {
       .post<any>(`${environment.apiUrl}/auth/register`, { nombre, email, password, terminos_aceptados: true });
   }
 
+  // ─── Verificar código ─────────────────────────────────────────────
+  verificarCodigo(email: string, codigo: string): Observable<any> {
+    return this.http
+      .post<any>(`${environment.apiUrl}/auth/verificar-codigo`, { email, codigo })
+      .pipe(
+        tap(res => {
+          if (res.ok) {
+            localStorage.setItem('loncho_token',   res.token);
+            localStorage.setItem('loncho_usuario', JSON.stringify(res.usuario));
+            this._token.set(res.token);
+            this._usuario.set(res.usuario);
+          }
+        })
+      );
+  }
+
+  // ─── Reenviar código ──────────────────────────────────────────────
+  reenviarCodigo(email: string): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/auth/reenviar-codigo`, { email });
+  }
+
   // ─── Logout ───────────────────────────────────────────────────────
   logout(): void {
     localStorage.removeItem('loncho_token');

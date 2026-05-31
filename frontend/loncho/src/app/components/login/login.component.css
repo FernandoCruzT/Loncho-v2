@@ -1,3 +1,79 @@
+/* ── Reenvío de código ───────────────────────────────────────────── */
+.reenvio-box {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.5rem;
+}
+.reenvio-toggle {
+  background: none;
+  border: none;
+  color: #e63030;
+  cursor: pointer;
+  font-size: 0.82rem;
+  padding: 0;
+  margin-bottom: 0.75rem;
+  text-align: left;
+}
+.reenvio-toggle:hover { text-decoration: underline; }
+.reenvio-form { display: flex; flex-direction: column; gap: 0.5rem; }
+.reenvio-input {
+  padding: 0.55rem 0.75rem;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 7px;
+  color: #eee;
+  font-size: 0.88rem;
+}
+.reenvio-input:focus { border-color: #e63030; outline: none; }
+.reenvio-btn {
+  padding: 0.55rem;
+  background: #e63030;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.reenvio-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.reenvio-ok  { margin: 0; font-size: 0.82rem; color: #22c55e; }
+.reenvio-err { margin: 0; font-size: 0.82rem; color: #f87171; }
+
+/* ── Input código ────────────────────────────────────────────────── */
+.codigo-input {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5rem;
+  width: 100%;
+  padding: 0.6rem;
+  background: #0d0d0d;
+  border: 2px solid #333;
+  border-radius: 10px;
+  color: #fff;
+  box-sizing: border-box;
+}
+.codigo-input:focus { border-color: #e63030; outline: none; }
+
+/* ── Ojito contraseña ────────────────────────────────────────────── */
+.campo-password { position: relative; display: flex; align-items: center; }
+.campo-password input { width: 100%; padding-right: 2.8rem; }
+.btn-ojito {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.btn-ojito:hover { color: #ccc; }
+
 /* ── Página centrada ─────────────────────────────────────────────── */
 .auth-page {
   min-height: calc(100vh - 64px - 80px);

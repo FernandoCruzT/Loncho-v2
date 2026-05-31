@@ -33,15 +33,21 @@
       <!-- Password -->
       <div class="campo">
         <label for="login-password">Contraseña</label>
-        <input
-          id="login-password"
-          type="password"
-          autocomplete="current-password"
-          placeholder="••••••••"
-          [value]="password()"
-          (input)="password.set($any($event.target).value)"
-          [disabled]="loading()"
-        />
+        <div class="campo-password">
+          <input
+            id="login-password"
+            [type]="mostrarPassword() ? 'text' : 'password'"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            [value]="password()"
+            (input)="password.set($any($event.target).value)"
+            [disabled]="loading()"
+          />
+          <button type="button" class="btn-ojito" (click)="mostrarPassword.set(!mostrarPassword())"
+            [attr.aria-label]="mostrarPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            {{ mostrarPassword() ? '🙈' : '👁' }}
+          </button>
+        </div>
       </div>
 
       <!-- Error -->
@@ -49,6 +55,59 @@
         <p class="msg-error" role="alert">
           <span class="error-icon">⚠</span> {{ error() }}
         </p>
+      }
+
+      <!-- Reenvío de código (solo visible cuando el error es 403) -->
+      @if (mostrarReenvio()) {
+        <div class="reenvio-box">
+          <button type="button" class="reenvio-toggle"
+            (click)="mostrarReenvio.set(false)">
+            ¿No recibiste el código? Solicitar nuevo código ›
+          </button>
+          <div class="reenvio-form">
+            <input
+              type="email"
+              placeholder="tu@email.com"
+              [value]="emailReenvio()"
+              (input)="emailReenvio.set($any($event.target).value)"
+              [disabled]="cargandoReenvio()"
+              class="reenvio-input"
+            />
+            <button type="button" class="reenvio-btn"
+              (click)="solicitarCodigo()"
+              [disabled]="cargandoReenvio()">
+              {{ cargandoReenvio() ? 'Enviando...' : 'Enviar código' }}
+            </button>
+            @if (mensajeReenvio()) {
+              <p class="reenvio-ok">✓ {{ mensajeReenvio() }}</p>
+            }
+            @if (errorReenvio()) {
+              <p class="reenvio-err">⚠ {{ errorReenvio() }}</p>
+            }
+            @if (mensajeReenvio()) {
+              <div class="campo" style="margin-top:0.5rem">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="6"
+                  placeholder="000000"
+                  class="codigo-input"
+                  [value]="codigoLogin()"
+                  (input)="codigoLogin.set($any($event.target).value.replace(/\D/g,'').slice(0,6))"
+                  [disabled]="verificandoLogin()"
+                />
+              </div>
+              @if (errorCodigoLogin()) {
+                <p class="reenvio-err">⚠ {{ errorCodigoLogin() }}</p>
+              }
+              <button type="button" class="reenvio-btn"
+                (click)="verificarCodigoLogin()"
+                [disabled]="verificandoLogin()">
+                {{ verificandoLogin() ? 'Verificando...' : 'Verificar cuenta' }}
+              </button>
+            }
+          </div>
+        </div>
       }
 
       <!-- Botón principal -->
@@ -62,16 +121,6 @@
       </button>
 
     </form>
-
-    <!-- ── Separador ─────────────────────────────────────────────── -->
-    <div class="separador">
-      <span>o</span>
-    </div>
-
-    <!-- ── Continuar sin cuenta ──────────────────────────────────── -->
-    <button class="btn-secondary" routerLink="/" [disabled]="loading()">
-      Continuar sin cuenta
-    </button>
 
     <!-- ── Link a registro ───────────────────────────────────────── -->
     <p class="link-inferior">

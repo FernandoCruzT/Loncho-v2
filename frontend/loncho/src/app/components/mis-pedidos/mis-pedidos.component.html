@@ -44,13 +44,13 @@
   @if (!loading() && !error() && pedidos().length > 0) {
     <div class="pedidos-lista">
 
-      @for (pedido of pedidos(); track pedido.id) {
+      @for (pedido of pedidos(); track pedido.id; let i = $index) {
         <div class="pedido-card">
 
           <!-- ── Cabecera: id · badge · fecha ─────────────────────── -->
           <div class="pedido-cabecera">
 
-            <span class="pedido-id">Pedido #{{ pedido.id }}</span>
+            <span class="pedido-id">Pedido #{{ pedidos().length - i }}</span>
 
             <span
               class="pedido-badge"
@@ -165,6 +165,13 @@
   }
 
 </div>
+
+<!-- ── Toast envío ───────────────────────────────────────────────── -->
+@if (toastEnvioVisible()) {
+  <div class="toast-envio" role="alert">
+    {{ toastEnvio() }}
+  </div>
+}
 
 <!-- ── Modal envío de correo ─────────────────────────────────────── -->
 @if (emailEnvio()) {

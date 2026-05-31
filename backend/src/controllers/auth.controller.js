@@ -14,6 +14,10 @@ function signToken(usuario) {
   );
 }
 
+function generarCodigo() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 async function register(req, res) {
   const { nombre, email, password, terminos_aceptados } = req.body;
 
@@ -30,21 +34,87 @@ async function register(req, res) {
     return res.status(409).json({ ok: false, mensaje: 'El email ya está registrado' });
   }
 
-  const hash              = await bcrypt.hash(password, SALT_ROUNDS);
-  const tokenVerificacion = crypto.randomBytes(32).toString('hex');
+  const hash   = await bcrypt.hash(password, SALT_ROUNDS);
+  const codigo = generarCodigo();
+  const mins   = parseInt(process.env.CODIGO_EXPIRACION_MIN ?? '1');
 
   await pool.query(
-    'INSERT INTO usuarios (nombre, email, password, terminos_aceptados, token_verificacion, email_verificado) VALUES ($1, $2, $3, true, $4, false)',
-    [nombre, email, hash, tokenVerificacion]
+    `INSERT INTO usuarios (nombre, email, password, terminos_aceptados, token_verificacion, email_verificado, codigo_expira)
+     VALUES ($1, $2, $3, true, $4, false, NOW() + INTERVAL '${mins} minutes')`,
+    [nombre, email, hash, codigo]
   );
 
-  await emailService.sendVerificacionEmail(email, nombre, tokenVerificacion);
+  await emailService.sendCodigoVerificacion(email, nombre, codigo);
 
   return res.status(201).json({
     ok: true,
     mensaje: 'Revisa tu correo para verificar tu cuenta',
     requiresVerification: true
   });
+}
+
+async function verificarCodigo(req, res) {
+  const { email, codigo } = req.body;
+
+  const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+  if (result.rows.length === 0) {
+    return res.status(404).json({ ok: false, mensaje: 'Usuario no encontrado' });
+  }
+
+  const usuario = result.rows[0];
+
+  if (usuario.email_verificado) {
+    return res.status(400).json({ ok: false, mensaje: 'El correo ya fue verificado' });
+  }
+
+  const ahora = new Date();
+  if (!usuario.codigo_expira || new Date(usuario.codigo_expira) < ahora) {
+    return res.status(400).json({ ok: false, mensaje: 'El código expiró. Solicita uno nuevo.' });
+  }
+
+  if (usuario.token_verificacion !== codigo) {
+    return res.status(400).json({ ok: false, mensaje: 'Código incorrecto' });
+  }
+
+  await pool.query(
+    'UPDATE usuarios SET email_verificado=true, token_verificacion=null, codigo_expira=null WHERE id=$1',
+    [usuario.id]
+  );
+
+  const token = signToken({ id: usuario.id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol });
+  return res.json({ ok: true, token, usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol } });
+}
+
+async function reenviarCodigo(req, res) {
+  const { email } = req.body;
+
+  const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+  if (result.rows.length === 0) {
+    return res.status(404).json({ ok: false, mensaje: 'Usuario no encontrado' });
+  }
+
+  const usuario = result.rows[0];
+
+  if (usuario.email_verificado) {
+    return res.status(400).json({ ok: false, mensaje: 'El correo ya fue verificado' });
+  }
+
+  const ahora = new Date();
+  if (usuario.codigo_expira && new Date(usuario.codigo_expira) > ahora) {
+    return res.status(429).json({ ok: false, mensaje: 'Espera antes de solicitar otro código' });
+  }
+
+  const codigo = generarCodigo();
+  const mins   = parseInt(process.env.CODIGO_EXPIRACION_MIN ?? '1');
+
+  await pool.query(
+    `UPDATE usuarios SET token_verificacion=$1, codigo_expira=NOW() + INTERVAL '${mins} minutes' WHERE id=$2`,
+    [codigo, usuario.id]
+  );
+
+  await emailService.sendCodigoVerificacion(email, usuario.nombre, codigo);
+
+  return res.json({ ok: true, mensaje: 'Nuevo código enviado' });
 }
 
 async function login(req, res) {
@@ -94,7 +164,7 @@ async function verificarEmail(req, res) {
       <body><div class="card">
         <h2>Token inválido o expirado</h2>
         <p>El enlace de verificación no es válido o ya fue usado.</p>
-        <a href="http://localhost:4200/register">Volver al registro</a>
+        <a href="${process.env.FRONTEND_URL}/register">Volver al registro</a>
       </div></body></html>
     `);
   }
@@ -118,10 +188,10 @@ async function verificarEmail(req, res) {
     <body><div class="card">
       <h2>¡Cuenta verificada!</h2>
       <p>Tu cuenta ha sido verificada exitosamente. Ya puedes iniciar sesión en Loncho.</p>
-      <a class="btn" href="http://localhost:4200/login">Ir al login</a>
+      <a class="btn" href="${process.env.FRONTEND_URL}/login">Ir al login</a>
     </div>
     <script>
-      setTimeout(() => { window.location.href = 'http://localhost:4200/login'; }, 3000);
+      setTimeout(() => { window.location.href = '${process.env.FRONTEND_URL}/login'; }, 3000);
     </script>
     </body></html>
   `);
@@ -130,6 +200,11 @@ async function verificarEmail(req, res) {
 async function eliminarCuenta(req, res) {
   const { id } = req.usuario;
   await pool.query('DELETE FROM carrito WHERE usuario_id = $1', [id]);
+  await pool.query(
+    'DELETE FROM pedido_items WHERE pedido_id IN (SELECT id FROM pedidos WHERE usuario_id = $1)',
+    [id]
+  );
+  await pool.query('DELETE FROM pedidos WHERE usuario_id = $1', [id]);
   await pool.query('DELETE FROM usuarios WHERE id = $1', [id]);
   return res.json({ ok: true, mensaje: 'Cuenta eliminada' });
 }
@@ -173,4 +248,4 @@ async function updatePerfil(req, res) {
   return res.json({ ok: true, mensaje: 'Perfil actualizado', usuario: u });
 }
 
-module.exports = { register, login, verificarEmail, updatePerfil, eliminarCuenta };
+module.exports = { register, login, verificarEmail, verificarCodigo, reenviarCodigo, updatePerfil, eliminarCuenta };

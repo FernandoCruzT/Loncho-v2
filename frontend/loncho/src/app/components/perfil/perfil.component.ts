@@ -26,6 +26,9 @@ export class PerfilComponent {
   passwordActual    = signal('');
   passwordNueva     = signal('');
   confirmarPassword = signal('');
+  mostrarPassActual  = signal(false);
+  mostrarPassNueva   = signal(false);
+  mostrarPassConfirm = signal(false);
 
   loading              = signal(false);
   exito                = signal('');

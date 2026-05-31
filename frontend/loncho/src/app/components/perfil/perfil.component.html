@@ -46,38 +46,53 @@
 
         <div class="campo">
           <label for="p-pass-actual">Contraseña actual</label>
-          <input
-            id="p-pass-actual"
-            type="password"
-            autocomplete="current-password"
-            [value]="passwordActual()"
-            (input)="passwordActual.set($any($event.target).value)"
-            [disabled]="loading()"
-          />
+          <div class="campo-password">
+            <input
+              id="p-pass-actual"
+              [type]="mostrarPassActual() ? 'text' : 'password'"
+              autocomplete="current-password"
+              [value]="passwordActual()"
+              (input)="passwordActual.set($any($event.target).value)"
+              [disabled]="loading()"
+            />
+            <button type="button" class="btn-ojito" (click)="mostrarPassActual.set(!mostrarPassActual())">
+              {{ mostrarPassActual() ? '🙈' : '👁' }}
+            </button>
+          </div>
         </div>
 
         <div class="campo">
           <label for="p-pass-nueva">Contraseña nueva</label>
-          <input
-            id="p-pass-nueva"
-            type="password"
-            autocomplete="new-password"
-            [value]="passwordNueva()"
-            (input)="passwordNueva.set($any($event.target).value)"
-            [disabled]="loading()"
-          />
+          <div class="campo-password">
+            <input
+              id="p-pass-nueva"
+              [type]="mostrarPassNueva() ? 'text' : 'password'"
+              autocomplete="new-password"
+              [value]="passwordNueva()"
+              (input)="passwordNueva.set($any($event.target).value)"
+              [disabled]="loading()"
+            />
+            <button type="button" class="btn-ojito" (click)="mostrarPassNueva.set(!mostrarPassNueva())">
+              {{ mostrarPassNueva() ? '🙈' : '👁' }}
+            </button>
+          </div>
         </div>
 
         <div class="campo">
           <label for="p-pass-confirm">Confirmar contraseña nueva</label>
-          <input
-            id="p-pass-confirm"
-            type="password"
-            autocomplete="new-password"
-            [value]="confirmarPassword()"
-            (input)="confirmarPassword.set($any($event.target).value)"
-            [disabled]="loading()"
-          />
+          <div class="campo-password">
+            <input
+              id="p-pass-confirm"
+              [type]="mostrarPassConfirm() ? 'text' : 'password'"
+              autocomplete="new-password"
+              [value]="confirmarPassword()"
+              (input)="confirmarPassword.set($any($event.target).value)"
+              [disabled]="loading()"
+            />
+            <button type="button" class="btn-ojito" (click)="mostrarPassConfirm.set(!mostrarPassConfirm())">
+              {{ mostrarPassConfirm() ? '🙈' : '👁' }}
+            </button>
+          </div>
         </div>
       </div>
 

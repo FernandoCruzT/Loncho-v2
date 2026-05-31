@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -12,10 +12,11 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnDestroy {
 
   private authService = inject(AuthService);
   private router      = inject(Router);
+  private countdownId: ReturnType<typeof setInterval> | null = null;
 
   nombre            = signal('');
   email             = signal('');
@@ -28,11 +29,22 @@ export class RegisterComponent {
   loading           = signal(false);
   registroExitoso   = signal(false);
   emailRegistrado   = signal('');
+  mostrarPasswordReg = signal(false);
+
+  // ─── Verificación por código ──────────────────────────────────────
+  codigo            = signal('');
+  cargandoCodigo    = signal(false);
+  errorCodigo       = signal('');
+  segundosRestantes = signal(0);
 
   toastMsg     = signal('');
   toastVisible = signal(false);
 
   private readonly EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  ngOnDestroy(): void {
+    if (this.countdownId) clearInterval(this.countdownId);
+  }
 
   onTerminosChange(checked: boolean): void {
     this.terminos.set(checked);
@@ -50,8 +62,61 @@ export class RegisterComponent {
     setTimeout(() => this.toastVisible.set(false), 2500);
   }
 
-  irAlLogin(): void {
-    this.router.navigate(['/login']);
+  iniciarCountdown(): void {
+    if (this.countdownId) clearInterval(this.countdownId);
+    this.segundosRestantes.set(60);
+    this.countdownId = setInterval(() => {
+      const restantes = this.segundosRestantes() - 1;
+      this.segundosRestantes.set(restantes);
+      if (restantes <= 0 && this.countdownId) {
+        clearInterval(this.countdownId);
+        this.countdownId = null;
+      }
+    }, 1000);
+  }
+
+  verificarCodigoSubmit(): void {
+    if (!this.codigo().trim()) {
+      this.errorCodigo.set('Ingresa el código de 6 dígitos.');
+      return;
+    }
+
+    this.cargandoCodigo.set(true);
+    this.errorCodigo.set('');
+
+    this.authService
+      .verificarCodigo(this.emailRegistrado(), this.codigo())
+      .pipe(finalize(() => this.cargandoCodigo.set(false)))
+      .subscribe({
+        next: res => {
+          if (res.ok) {
+            this.router.navigate(['/']);
+          } else {
+            this.errorCodigo.set(res.mensaje ?? 'Código incorrecto.');
+          }
+        },
+        error: err => {
+          this.errorCodigo.set(err?.error?.mensaje ?? 'Error al verificar el código.');
+        }
+      });
+  }
+
+  reenviarCodigoClick(): void {
+    this.errorCodigo.set('');
+    this.authService
+      .reenviarCodigo(this.emailRegistrado())
+      .subscribe({
+        next: res => {
+          if (res.ok) {
+            this.iniciarCountdown();
+          } else {
+            this.errorCodigo.set(res.mensaje ?? 'No se pudo reenviar el código.');
+          }
+        },
+        error: err => {
+          this.errorCodigo.set(err?.error?.mensaje ?? 'Error al reenviar el código.');
+        }
+      });
   }
 
   onSubmit(event: Event): void {
@@ -88,14 +153,13 @@ export class RegisterComponent {
           if (res.ok && res.requiresVerification) {
             this.emailRegistrado.set(this.email().trim());
             this.registroExitoso.set(true);
+            this.iniciarCountdown();
           } else {
             this.error.set(res.mensaje ?? 'No se pudo crear la cuenta.');
           }
         },
         error: err => {
-          this.error.set(
-            err?.error?.mensaje ?? 'Error al conectar con el servidor.'
-          );
+          this.error.set(err?.error?.mensaje ?? 'Error al conectar con el servidor.');
         }
       });
   }

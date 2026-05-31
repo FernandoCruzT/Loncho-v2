@@ -7,17 +7,48 @@
       <span class="logo-text">LONCHO</span>
     </a>
 
-    <!-- ── Pantalla de éxito post-registro ───────────────────────── -->
+    <!-- ── Pantalla de verificación por código ───────────────────── -->
     @if (registroExitoso()) {
       <div class="auth-header">
-        <h1>¡Registro exitoso!</h1>
-        <p class="auth-sub">Revisa tu correo para verificar tu cuenta</p>
+        <h1>Verifica tu correo</h1>
+        <p class="auth-sub">Ingresa el código que enviamos a <strong>{{ emailRegistrado() }}</strong></p>
       </div>
-      <div class="msg-verificacion">
-        <p>Te enviamos un correo a <strong>{{ emailRegistrado() }}</strong>.</p>
-        <p>Haz click en el enlace del correo para activar tu cuenta antes de iniciar sesión.</p>
+
+      <div class="campo">
+        <label for="reg-codigo">Código de 6 dígitos</label>
+        <input
+          id="reg-codigo"
+          type="text"
+          inputmode="numeric"
+          maxlength="6"
+          placeholder="000000"
+          class="codigo-input"
+          [value]="codigo()"
+          (input)="codigo.set($any($event.target).value.replace(/\D/g, '').slice(0,6))"
+          [disabled]="cargandoCodigo()"
+        />
       </div>
-      <button class="btn-primary" (click)="irAlLogin()">Ir al login</button>
+
+      @if (errorCodigo()) {
+        <p class="msg-error" role="alert"><span class="error-icon">⚠</span> {{ errorCodigo() }}</p>
+      }
+
+      <button class="btn-primary" (click)="verificarCodigoSubmit()" [disabled]="cargandoCodigo()">
+        @if (cargandoCodigo()) {
+          <span class="btn-spinner" aria-hidden="true"></span> Verificando...
+        } @else {
+          Verificar
+        }
+      </button>
+
+      <button class="btn-reenviar" (click)="reenviarCodigoClick()"
+        [disabled]="segundosRestantes() > 0 || cargandoCodigo()">
+        @if (segundosRestantes() > 0) {
+          Reenviar código ({{ segundosRestantes() }}s)
+        } @else {
+          Reenviar código
+        }
+      </button>
     }
 
     <!-- ── Formulario ────────────────────────────────────────────── -->
@@ -60,15 +91,20 @@
       <!-- Password -->
       <div class="campo">
         <label for="reg-password">Contraseña</label>
-        <input
-          id="reg-password"
-          type="password"
-          autocomplete="new-password"
-          placeholder="Mínimo 8 caracteres"
-          [value]="password()"
-          (input)="password.set($any($event.target).value)"
-          [disabled]="loading()"
-        />
+        <div class="campo-password">
+          <input
+            id="reg-password"
+            [type]="mostrarPasswordReg() ? 'text' : 'password'"
+            autocomplete="new-password"
+            placeholder="Mínimo 8 caracteres"
+            [value]="password()"
+            (input)="password.set($any($event.target).value)"
+            [disabled]="loading()"
+          />
+          <button type="button" class="btn-ojito" (click)="mostrarPasswordReg.set(!mostrarPasswordReg())">
+            {{ mostrarPasswordReg() ? '🙈' : '👁' }}
+          </button>
+        </div>
       </div>
 
       <!-- Términos y condiciones -->
@@ -121,16 +157,6 @@
       </button>
 
     </form>
-
-    <!-- ── Separador ─────────────────────────────────────────────── -->
-    <div class="separador">
-      <span>o</span>
-    </div>
-
-    <!-- ── Continuar sin cuenta ──────────────────────────────────── -->
-    <button class="btn-secondary" routerLink="/" [disabled]="loading()">
-      Continuar sin cuenta
-    </button>
 
     <!-- ── Link a login ──────────────────────────────────────────── -->
     <p class="link-inferior">

@@ -18,13 +18,79 @@ export class LoginComponent {
   private router      = inject(Router);
 
   // ─── Signals del formulario ───────────────────────────────────────
-  email    = signal('');
-  password = signal('');
-  error    = signal('');
-  loading  = signal(false);
+  email           = signal('');
+  password        = signal('');
+  error           = signal('');
+  loading         = signal(false);
+  mostrarPassword = signal(false);
+
+  // ─── Reenvío y verificación de código ───────────────────────────
+  mostrarReenvio    = signal(false);
+  emailReenvio      = signal('');
+  cargandoReenvio   = signal(false);
+  mensajeReenvio    = signal('');
+  errorReenvio      = signal('');
+  codigoLogin       = signal('');
+  verificandoLogin  = signal(false);
+  errorCodigoLogin  = signal('');
 
   // ─── Validación de email ─────────────────────────────────────────
   private readonly EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // ─── Solicitar nuevo código ───────────────────────────────────────
+  solicitarCodigo(): void {
+    if (!this.emailReenvio().trim()) {
+      this.errorReenvio.set('Ingresa tu correo');
+      return;
+    }
+
+    this.mensajeReenvio.set('');
+    this.errorReenvio.set('');
+    this.cargandoReenvio.set(true);
+
+    this.authService
+      .reenviarCodigo(this.emailReenvio().trim())
+      .pipe(finalize(() => this.cargandoReenvio.set(false)))
+      .subscribe({
+        next: res => {
+          if (res.ok) {
+            this.mensajeReenvio.set('Código enviado. Revisa tu correo.');
+          } else {
+            this.errorReenvio.set(res.mensaje ?? 'No se pudo enviar el código.');
+          }
+        },
+        error: err => {
+          const status = err?.status;
+          if (status === 404) {
+            this.errorReenvio.set('No encontramos una cuenta con ese correo');
+          } else {
+            this.errorReenvio.set(err?.error?.mensaje ?? 'No se pudo enviar el código.');
+          }
+        }
+      });
+  }
+
+  // ─── Verificar código desde login ────────────────────────────────
+  verificarCodigoLogin(): void {
+    this.errorCodigoLogin.set('');
+    this.verificandoLogin.set(true);
+
+    this.authService
+      .verificarCodigo(this.emailReenvio(), this.codigoLogin())
+      .pipe(finalize(() => this.verificandoLogin.set(false)))
+      .subscribe({
+        next: res => {
+          if (res.ok) {
+            this.router.navigate(['/']);
+          } else {
+            this.errorCodigoLogin.set(res.mensaje ?? 'Código incorrecto.');
+          }
+        },
+        error: err => {
+          this.errorCodigoLogin.set(err?.error?.mensaje ?? 'Error al verificar el código.');
+        }
+      });
+  }
 
   // ─── Submit ───────────────────────────────────────────────────────
   onSubmit(event: Event): void {
@@ -42,6 +108,9 @@ export class LoginComponent {
 
     this.loading.set(true);
     this.error.set('');
+    this.mostrarReenvio.set(false);
+    this.mensajeReenvio.set('');
+    this.errorReenvio.set('');
 
     this.authService
       .login(this.email().trim(), this.password())
@@ -55,9 +124,12 @@ export class LoginComponent {
           }
         },
         error: err => {
-          this.error.set(
-            err?.error?.mensaje ?? 'Error al conectar con el servidor.'
-          );
+          const mensaje = err?.error?.mensaje ?? 'Error al conectar con el servidor.';
+          this.error.set(mensaje);
+          if (err?.status === 403) {
+            this.mostrarReenvio.set(true);
+            this.emailReenvio.set(this.email().trim());
+          }
         }
       });
   }
