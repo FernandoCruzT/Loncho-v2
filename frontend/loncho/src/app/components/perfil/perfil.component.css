@@ -1,3 +1,52 @@
+/* ── Eliminar cuenta ──────────────────────────────────────────────── */
+.btn-eliminar {
+  width: 100%;
+  padding: 0.75rem;
+  background: transparent;
+  border: 1px solid #7f1d1d;
+  color: #f87171;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.btn-eliminar:hover { background: #7f1d1d22; }
+
+.eliminar-confirm {
+  background: #1a0a0a;
+  border: 1px solid #7f1d1d;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+}
+.eliminar-confirm p { margin: 0 0 0.75rem; font-size: 0.9rem; color: #fca5a5; }
+.eliminar-acciones { display: flex; gap: 0.75rem; }
+
+.btn-eliminar-confirm {
+  flex: 1;
+  padding: 0.65rem;
+  background: #991b1b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+.btn-eliminar-confirm:hover { background: #b91c1c; }
+.btn-eliminar-confirm:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-cancelar-eliminar {
+  flex: 1;
+  padding: 0.65rem;
+  background: #222;
+  color: #aaa;
+  border: 1px solid #333;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+}
+.btn-cancelar-eliminar:hover { background: #2a2a2a; }
+
 /* ── Página ───────────────────────────────────────────────────────── */
 .perfil-page {
   min-height: calc(100vh - 64px - 80px);

@@ -17,6 +17,10 @@ async function sendXMLRecibo(destinatario, pedido, xmlContent) {
     year:  'numeric'
   });
 
+  const totalMatch = xmlContent.match(/<total>([\d.]+)<\/total>/);
+  const totalStr   = totalMatch ? totalMatch[1] : (pedido.total || '0');
+  const total      = Number(totalStr).toFixed(2);
+
   await transporter.sendMail({
     from:    process.env.EMAIL_FROM,
     to:      destinatario,
@@ -37,7 +41,7 @@ async function sendXMLRecibo(destinatario, pedido, xmlContent) {
             </tr>
             <tr>
               <td style="padding:8px 0;color:#888;border-bottom:1px solid #222;">Total pagado</td>
-              <td style="padding:8px 0;color:#fff;font-weight:700;text-align:right;border-bottom:1px solid #222;">MX$${pedido.total ?? ''}</td>
+              <td style="padding:8px 0;color:#fff;font-weight:700;text-align:right;border-bottom:1px solid #222;">MX$${total}</td>
             </tr>
             <tr>
               <td style="padding:8px 0;color:#888;">Estado</td>

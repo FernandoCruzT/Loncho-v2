@@ -42,4 +42,8 @@ export class AdminService {
       { headers: this.getHeaders() }
     );
   }
+
+  crearProducto(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/productos`, data, { headers: this.getHeaders() });
+  }
 }

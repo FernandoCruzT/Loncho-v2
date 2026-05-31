@@ -5,6 +5,8 @@ import { finalize } from 'rxjs/operators';
 
 import { AdminService } from '../../core/services/admin.service';
 
+const CATEGORIAS = ['HOODIES', 'PANTALONES', 'CAMISETAS', 'CHAMARRAS', 'ACCESORIOS', 'SHORTS'] as const;
+
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -16,6 +18,8 @@ export class AdminComponent implements OnInit {
 
   private adminService = inject(AdminService);
 
+  readonly categorias = CATEGORIAS;
+
   tab       = signal<'productos' | 'usuarios'>('productos');
   productos = signal<any[]>([]);
   usuarios  = signal<any[]>([]);
@@ -25,6 +29,17 @@ export class AdminComponent implements OnInit {
   guardando = signal(false);
   error     = signal('');
   exito     = signal('');
+
+  creando        = signal(false);
+  guardandoNuevo = signal(false);
+  nuevoProducto  = signal({
+    nombre:      '',
+    precio:      0,
+    stock:       0,
+    descripcion: '',
+    categoria:   'HOODIES',
+    image_url:   ''
+  });
 
   ngOnInit(): void {
     forkJoin({
@@ -90,5 +105,31 @@ export class AdminComponent implements OnInit {
 
   setEditField(field: string, value: any): void {
     this.editForm.set({ ...this.editForm(), [field]: value });
+  }
+
+  setNuevoField(field: string, value: any): void {
+    this.nuevoProducto.set({ ...this.nuevoProducto(), [field]: value });
+  }
+
+  cancelarNuevo(): void {
+    this.creando.set(false);
+    this.nuevoProducto.set({ nombre: '', precio: 0, stock: 0, descripcion: '', categoria: 'HOODIES', image_url: '' });
+  }
+
+  guardarNuevoProducto(): void {
+    this.guardandoNuevo.set(true);
+    this.adminService.crearProducto(this.nuevoProducto())
+      .pipe(finalize(() => this.guardandoNuevo.set(false)))
+      .subscribe({
+        next: res => {
+          if (res.ok) {
+            this.productos.update(lista => [...lista, res.datos]);
+            this.cancelarNuevo();
+            this.exito.set('Producto creado correctamente');
+            setTimeout(() => this.exito.set(''), 3000);
+          }
+        },
+        error: err => this.error.set(err?.error?.mensaje ?? 'Error al crear el producto')
+      });
   }
 }

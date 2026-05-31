@@ -5,6 +5,7 @@ import { adminGuard }              from './core/guards/admin.guard';
 export const routes: Routes = [
   {
     path: '',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./components/catalogo/catalogo.component').then(m => m.CatalogoComponent)
   },

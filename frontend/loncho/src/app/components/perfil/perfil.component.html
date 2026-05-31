@@ -103,5 +103,41 @@
 
     </form>
 
+    <!-- ── Separador ───────────────────────────────────────────────── -->
+    <div style="border-top:1px solid #222;margin:1.5rem 0;"></div>
+
+    <!-- ── Eliminar cuenta ─────────────────────────────────────────── -->
+    @if (!confirmandoEliminar()) {
+      <button
+        type="button"
+        class="btn-eliminar"
+        (click)="confirmandoEliminar.set(true)"
+        [disabled]="loading()">
+        Eliminar cuenta
+      </button>
+    }
+
+    @if (confirmandoEliminar()) {
+      <div class="eliminar-confirm">
+        <p>¿Estás seguro? Esta acción no se puede deshacer.</p>
+        <div class="eliminar-acciones">
+          <button
+            type="button"
+            class="btn-eliminar-confirm"
+            (click)="eliminarCuenta()"
+            [disabled]="eliminando()">
+            {{ eliminando() ? 'Eliminando...' : 'Sí, eliminar' }}
+          </button>
+          <button
+            type="button"
+            class="btn-cancelar-eliminar"
+            (click)="confirmandoEliminar.set(false)"
+            [disabled]="eliminando()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    }
+
   </div>
 </div>

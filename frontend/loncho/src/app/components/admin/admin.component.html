@@ -31,6 +31,65 @@
       <div class="toast toast-error">{{ error() }}</div>
     }
 
+    <!-- ── Botón nuevo producto ─────────────────────────────────────── -->
+    <div class="nuevo-producto-barra">
+      <button class="btn-nuevo" (click)="creando.set(!creando())">
+        {{ creando() ? '✕ Cancelar' : '＋ Nuevo producto' }}
+      </button>
+    </div>
+
+    <!-- ── Formulario de creación ────────────────────────────────────── -->
+    @if (creando()) {
+      <div class="nuevo-form">
+        <h3 class="nuevo-titulo">Nuevo producto</h3>
+        <div class="edit-campo">
+          <label>Nombre</label>
+          <input type="text" [value]="nuevoProducto().nombre"
+            (input)="setNuevoField('nombre', $any($event.target).value)" />
+        </div>
+        <div class="edit-fila">
+          <div class="edit-campo">
+            <label>Precio</label>
+            <input type="number" min="1" [value]="nuevoProducto().precio"
+              (input)="setNuevoField('precio', +$any($event.target).value)" />
+          </div>
+          <div class="edit-campo">
+            <label>Stock</label>
+            <input type="number" min="0" [value]="nuevoProducto().stock"
+              (input)="setNuevoField('stock', +$any($event.target).value)" />
+          </div>
+        </div>
+        <div class="edit-campo">
+          <label>Categoría</label>
+          <select [value]="nuevoProducto().categoria"
+            (change)="setNuevoField('categoria', $any($event.target).value)">
+            @for (cat of categorias; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+        </div>
+        <div class="edit-campo">
+          <label>Descripción</label>
+          <textarea rows="2" [value]="nuevoProducto().descripcion"
+            (input)="setNuevoField('descripcion', $any($event.target).value)"></textarea>
+        </div>
+        <div class="edit-campo">
+          <label>URL de imagen</label>
+          <input type="text" [value]="nuevoProducto().image_url"
+            (input)="setNuevoField('image_url', $any($event.target).value)"
+            placeholder="https://..." />
+        </div>
+        <div class="edit-acciones">
+          <button class="btn-guardar" [disabled]="guardandoNuevo()" (click)="guardarNuevoProducto()">
+            {{ guardandoNuevo() ? 'Guardando...' : 'Guardar' }}
+          </button>
+          <button class="btn-cancelar" [disabled]="guardandoNuevo()" (click)="cancelarNuevo()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    }
+
     <div class="productos-grid">
       @for (producto of productos(); track producto.id) {
         <div class="producto-card" [class.editando]="editando() === producto.id">

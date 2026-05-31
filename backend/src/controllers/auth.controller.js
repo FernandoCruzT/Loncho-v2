@@ -127,6 +127,13 @@ async function verificarEmail(req, res) {
   `);
 }
 
+async function eliminarCuenta(req, res) {
+  const { id } = req.usuario;
+  await pool.query('DELETE FROM carrito WHERE usuario_id = $1', [id]);
+  await pool.query('DELETE FROM usuarios WHERE id = $1', [id]);
+  return res.json({ ok: true, mensaje: 'Cuenta eliminada' });
+}
+
 async function updatePerfil(req, res) {
   const { id } = req.usuario;
   const { nombre, passwordActual, passwordNueva } = req.body;
@@ -166,4 +173,4 @@ async function updatePerfil(req, res) {
   return res.json({ ok: true, mensaje: 'Perfil actualizado', usuario: u });
 }
 
-module.exports = { register, login, verificarEmail, updatePerfil };
+module.exports = { register, login, verificarEmail, updatePerfil, eliminarCuenta };

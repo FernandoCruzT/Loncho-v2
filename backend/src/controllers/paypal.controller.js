@@ -1,4 +1,5 @@
 const paypalService = require('../services/paypal.service');
+const emailService  = require('../services/email.service');
 const pool          = require('../config/db');
 
 async function createOrder(req, res) {
@@ -59,6 +60,39 @@ async function captureOrder(req, res) {
 
     const payerEmail = capture.payer?.email_address;
     const amount     = capture.purchase_units?.[0]?.payments?.captures?.[0]?.amount;
+
+    // Enviar recibo por correo (error no falla el pedido)
+    try {
+      const userResult = await pool.query('SELECT email FROM usuarios WHERE id = $1', [usuario_id]);
+      const userEmail  = userResult.rows[0]?.email;
+      if (userEmail) {
+        const fecha    = new Date().toISOString().split('T')[0];
+        const xmlItems = items.map(item => `
+    <producto>
+      <nombre>${item.nombre}</nombre>
+      <cantidad>${item.cantidad}</cantidad>
+      <precio>${Number(item.precio).toFixed(2)}</precio>
+      <subtotal>${Number(item.subtotal).toFixed(2)}</subtotal>
+    </producto>`).join('');
+
+        const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<recibo>
+  <tienda>Loncho</tienda>
+  <pedido_id>${pedidoId}</pedido_id>
+  <fecha>${fecha}</fecha>
+  <status>COMPLETADO</status>
+  <productos>${xmlItems}
+  </productos>
+  <subtotal>${Number(subtotal).toFixed(2)}</subtotal>
+  <iva>${Number(iva).toFixed(2)}</iva>
+  <total>${Number(total).toFixed(2)}</total>
+</recibo>`;
+
+        await emailService.sendXMLRecibo(userEmail, { id: pedidoId, total }, xmlContent);
+      }
+    } catch (emailErr) {
+      console.error('Error al enviar recibo por correo:', emailErr);
+    }
 
     return res.json({ ok: true, status: 'COMPLETED', pedidoId, payerEmail, amount });
   } catch (err) {

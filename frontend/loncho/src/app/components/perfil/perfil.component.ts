@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
@@ -16,28 +17,26 @@ import { environment } from '../../../environments/environment';
 export class PerfilComponent {
 
   private http        = inject(HttpClient);
-  private authService = inject(AuthService);
+  readonly authService = inject(AuthService);
+  private router      = inject(Router);
 
-  // ─── Datos del usuario ────────────────────────────────────────────
   nombre            = signal(this.authService.usuario()?.nombre ?? '');
   email             = signal(this.authService.usuario()?.email  ?? '');
 
-  // ─── Campos de contraseña ─────────────────────────────────────────
   passwordActual    = signal('');
   passwordNueva     = signal('');
   confirmarPassword = signal('');
 
-  // ─── Estado ───────────────────────────────────────────────────────
-  loading = signal(false);
-  exito   = signal('');
-  error   = signal('');
+  loading              = signal(false);
+  exito                = signal('');
+  error                = signal('');
+  confirmandoEliminar  = signal(false);
+  eliminando           = signal(false);
 
-  // ─── Inicial del avatar ───────────────────────────────────────────
   get inicial(): string {
     return (this.nombre() || this.email()).charAt(0).toUpperCase();
   }
 
-  // ─── Guardar perfil ───────────────────────────────────────────────
   guardarPerfil(event: Event): void {
     event.preventDefault();
     this.exito.set('');
@@ -50,6 +49,14 @@ export class PerfilComponent {
 
     if (this.passwordNueva() && this.passwordNueva() !== this.confirmarPassword()) {
       this.error.set('Las contraseñas no coinciden.');
+      return;
+    }
+
+    const nombreCambiado   = this.nombre().trim() !== this.authService.usuario()?.nombre;
+    const passwordCambiada = !!this.passwordNueva();
+
+    if (!nombreCambiado && !passwordCambiada) {
+      this.exito.set('No hay cambios que guardar');
       return;
     }
 
@@ -79,6 +86,32 @@ export class PerfilComponent {
             this.exito.set('Perfil actualizado correctamente.');
           } else {
             this.error.set(res.mensaje ?? 'No se pudo actualizar el perfil.');
+          }
+        },
+        error: err => {
+          this.error.set(err?.error?.mensaje ?? 'Error al conectar con el servidor.');
+        }
+      });
+  }
+
+  eliminarCuenta(): void {
+    this.eliminando.set(true);
+    this.error.set('');
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.authService.getToken()}`
+    });
+
+    this.http
+      .delete<any>(`${environment.apiUrl}/auth/cuenta`, { headers })
+      .pipe(finalize(() => this.eliminando.set(false)))
+      .subscribe({
+        next: res => {
+          if (res.ok) {
+            this.authService.logout();
+            this.router.navigate(['/']);
+          } else {
+            this.error.set(res.mensaje ?? 'No se pudo eliminar la cuenta.');
           }
         },
         error: err => {

@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 import { Product }        from '../../core/models/product.model';
 import { ProductService } from '../../core/services/product.service';
@@ -18,6 +19,7 @@ export class CatalogoComponent implements OnInit {
   private productService  = inject(ProductService);
   private carritoService  = inject(CarritoService);
   readonly authService    = inject(AuthService);
+  readonly router         = inject(Router);
 
   // ─── Signals ─────────────────────────────────────────────────────
   products        = signal<Product[]>([]);

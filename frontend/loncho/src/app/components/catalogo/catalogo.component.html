@@ -121,8 +121,8 @@
 
 <!-- ── Toast ─────────────────────────────────────────────────────── -->
 @if (toastVisible()) {
-  <div class="toast" role="alert" aria-live="polite">
+  <div class="toast" role="alert" (click)="router.navigate(['/carrito'])" style="cursor:pointer;">
     <span class="toast-check">✓</span>
-    <span><strong>{{ toast() }}</strong> agregado al carrito</span>
+    <span><strong>{{ toast() }}</strong> agregado · <u>Ver carrito</u></span>
   </div>
 }

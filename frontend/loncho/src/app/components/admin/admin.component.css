@@ -1,3 +1,41 @@
+/* ── Nuevo producto ──────────────────────────────────────────────── */
+.nuevo-producto-barra {
+  margin-bottom: 1.5rem;
+}
+.btn-nuevo {
+  padding: 0.6rem 1.4rem;
+  background: #e63030;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.btn-nuevo:hover { background: #c42020; }
+
+.nuevo-form {
+  background: #141414;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+.nuevo-titulo {
+  margin: 0 0 1.25rem;
+  font-size: 1rem;
+  color: #eee;
+}
+.nuevo-form select {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #eee;
+  font-size: 0.9rem;
+}
+
 /* ── Layout general ──────────────────────────────────────────────── */
 .admin-page {
   min-height: 100vh;

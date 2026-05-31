@@ -56,4 +56,27 @@ async function toggleStock(req, res) {
   return res.json({ ok: true, mensaje: 'Stock actualizado' });
 }
 
-module.exports = { getUsuarios, getProductos, updateProducto, toggleStock };
+async function crearProducto(req, res) {
+  const { nombre, precio, stock, descripcion, categoria, image_url } = req.body;
+
+  if (!nombre || !categoria) {
+    return res.status(400).json({ ok: false, mensaje: 'nombre y categoria son requeridos' });
+  }
+  if (!precio || Number(precio) <= 0) {
+    return res.status(400).json({ ok: false, mensaje: 'El precio debe ser mayor a 0' });
+  }
+  if (stock === undefined || Number(stock) < 0) {
+    return res.status(400).json({ ok: false, mensaje: 'El stock no puede ser negativo' });
+  }
+
+  const en_stock = Number(stock) > 0;
+  const result   = await pool.query(
+    `INSERT INTO productos (nombre, precio, stock, descripcion, categoria, image_url, en_stock)
+     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+    [nombre, Number(precio), Number(stock), descripcion ?? '', categoria, image_url ?? '', en_stock]
+  );
+
+  return res.status(201).json({ ok: true, datos: result.rows[0] });
+}
+
+module.exports = { getUsuarios, getProductos, updateProducto, toggleStock, crearProducto };
