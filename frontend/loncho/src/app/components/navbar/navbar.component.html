@@ -10,13 +10,15 @@
     <!-- ── Links desktop ─────────────────────────────────── -->
     <ul class="nav-links" [class.open]="menuAbierto()">
 
-      <li>
-        <a routerLink="/"
-           routerLinkActive="active"
-           [routerLinkActiveOptions]="{ exact: true }">
-          CATÁLOGO
-        </a>
-      </li>
+      @if (isLoggedIn()) {
+        <li>
+          <a routerLink="/"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }">
+            CATÁLOGO
+          </a>
+        </li>
+      }
 
       @if (isLoggedIn()) {
         @if (!isAdmin()) {
@@ -41,8 +43,8 @@
         </li>
       }
 
-      <!-- Carrito con badge (solo usuarios, no admin) -->
-      @if (!isAdmin()) {
+      <!-- Carrito con badge (solo usuarios logueados, no admin) -->
+      @if (isLoggedIn() && !isAdmin()) {
         <li class="carrito-item">
           <a routerLink="/carrito" routerLinkActive="active" class="carrito-btn">
             <svg xmlns="http://www.w3.org/2000/svg"
