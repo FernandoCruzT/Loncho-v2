@@ -1,0 +1,43 @@
+custom,loncho_db,carrito,id,1,int4,N,PRIMARY KEY,N,N,N
+custom,loncho_db,carrito,usuario_id,2,int4,N,FOREIGN KEY,loncho_db,usuarios,id
+custom,loncho_db,carrito,producto_id,3,int4,N,FOREIGN KEY,loncho_db,productos,id
+custom,loncho_db,carrito,cantidad,4,int4,N,N,N,N,N
+custom,loncho_db,carrito,created_at,5,timestamp,N,N,N,N,N
+custom,loncho_db,carrito,updated_at,6,timestamp,N,N,N,N,N
+custom,loncho_db,pedido_items,id,1,int4,N,PRIMARY KEY,N,N,N
+custom,loncho_db,pedido_items,pedido_id,2,int4,N,FOREIGN KEY,loncho_db,pedidos,id
+custom,loncho_db,pedido_items,producto_id,3,int4,N,FOREIGN KEY,loncho_db,productos,id
+custom,loncho_db,pedido_items,nombre,4,varchar,150,N,N,N,N
+custom,loncho_db,pedido_items,precio,5,numeric,N,N,N,N,N
+custom,loncho_db,pedido_items,cantidad,6,int4,N,N,N,N,N
+custom,loncho_db,pedido_items,subtotal,7,numeric,N,N,N,N,N
+custom,loncho_db,pedidos,id,1,int4,N,PRIMARY KEY,N,N,N
+custom,loncho_db,pedidos,usuario_id,2,int4,N,FOREIGN KEY,loncho_db,usuarios,id
+custom,loncho_db,pedidos,status,3,varchar,50,N,N,N,N
+custom,loncho_db,pedidos,subtotal,4,numeric,N,N,N,N,N
+custom,loncho_db,pedidos,iva,5,numeric,N,N,N,N,N
+custom,loncho_db,pedidos,total,6,numeric,N,N,N,N,N
+custom,loncho_db,pedidos,paypal_order_id,7,varchar,100,N,N,N,N
+custom,loncho_db,pedidos,paypal_status,8,varchar,50,N,N,N,N
+custom,loncho_db,pedidos,created_at,9,timestamp,N,N,N,N,N
+custom,loncho_db,pedidos,updated_at,10,timestamp,N,N,N,N,N
+custom,loncho_db,productos,id,1,int4,N,PRIMARY KEY,N,N,N
+custom,loncho_db,productos,nombre,2,varchar,150,N,N,N,N
+custom,loncho_db,productos,precio,3,numeric,N,N,N,N,N
+custom,loncho_db,productos,image_url,4,text,N,N,N,N,N
+custom,loncho_db,productos,categoria,5,varchar,100,N,N,N,N
+custom,loncho_db,productos,descripcion,6,text,N,N,N,N,N
+custom,loncho_db,productos,en_stock,7,bool,N,N,N,N,N
+custom,loncho_db,productos,created_at,8,timestamp,N,N,N,N,N
+custom,loncho_db,productos,updated_at,9,timestamp,N,N,N,N,N
+custom,loncho_db,productos,stock,10,int4,N,N,N,N,N
+custom,loncho_db,usuarios,id,1,int4,N,PRIMARY KEY,N,N,N
+custom,loncho_db,usuarios,nombre,2,varchar,100,N,N,N,N
+custom,loncho_db,usuarios,email,3,varchar,150,N,N,N,N
+custom,loncho_db,usuarios,password,4,varchar,255,N,N,N,N
+custom,loncho_db,usuarios,created_at,5,timestamp,N,N,N,N,N
+custom,loncho_db,usuarios,rol,6,varchar,20,N,N,N,N
+custom,loncho_db,usuarios,terminos_aceptados,7,bool,N,N,N,N,N
+custom,loncho_db,usuarios,email_verificado,8,bool,N,N,N,N,N
+custom,loncho_db,usuarios,token_verificacion,9,varchar,100,N,N,N,N
+custom,loncho_db,usuarios,codigo_expira,10,timestamptz,N,N,N,N,N

@@ -36,7 +36,7 @@ async function register(req, res) {
 
   const hash   = await bcrypt.hash(password, SALT_ROUNDS);
   const codigo = generarCodigo();
-  const mins   = parseInt(process.env.CODIGO_EXPIRACION_MIN ?? '1');
+  const mins   = parseInt(process.env.CODIGO_EXPIRACION_MIN ?? '6');
 
   await pool.query(
     `INSERT INTO usuarios (nombre, email, password, terminos_aceptados, token_verificacion, email_verificado, codigo_expira)
@@ -105,7 +105,7 @@ async function reenviarCodigo(req, res) {
   }
 
   const codigo = generarCodigo();
-  const mins   = parseInt(process.env.CODIGO_EXPIRACION_MIN ?? '1');
+  const mins   = parseInt(process.env.CODIGO_EXPIRACION_MIN ?? '6');
 
   await pool.query(
     `UPDATE usuarios SET token_verificacion=$1, codigo_expira=NOW() + INTERVAL '${mins} minutes' WHERE id=$2`,

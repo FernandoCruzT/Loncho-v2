@@ -3,11 +3,11 @@ const pool = require('../config/db');
 const getProductos = async (req, res) => {
   try {
     const { categoria } = req.query;
-    let query  = 'SELECT * FROM productos';
+    let query  = 'SELECT * FROM productos WHERE en_stock = true';
     const params = [];
 
     if (categoria) {
-      query += ' WHERE categoria = $1';
+      query += ' AND categoria = $1';
       params.push(categoria);
     }
 

@@ -2,7 +2,7 @@ const pool = require('../config/db');
 
 async function getUsuarios(req, res) {
   const result = await pool.query(
-    'SELECT id, nombre, email, rol, terminos_aceptados, created_at FROM usuarios ORDER BY created_at DESC'
+    'SELECT id, nombre, email, rol, terminos_aceptados, email_verificado, created_at FROM usuarios ORDER BY created_at DESC'
   );
   return res.json({ ok: true, datos: result.rows });
 }
