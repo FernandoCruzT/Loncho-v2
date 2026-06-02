@@ -56,6 +56,11 @@ export class CatalogoComponent implements OnInit {
     this.productService.getAll().subscribe({
       next: prods => {
         this.products.set(prods);
+        // Sincronizar cantidades con el carrito actual
+        const itemsCarrito = this.carritoService.items();
+        for (const item of itemsCarrito) {
+          this.cantidades.set(item.product.id, item.cantidad);
+        }
         this.loading.set(false);
       },
       error: () => {

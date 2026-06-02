@@ -107,33 +107,39 @@ export class CheckoutComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // ── Pago aprobado por el usuario ─────────────────────────────
         onApprove: async (data: any) => {
-          const itemsParaPedido = this.items().map(i => ({
-            producto_id: i.product.id,
-            nombre:      i.product.nombre,
-            precio:      i.product.precio,
-            cantidad:    i.cantidad,
-            subtotal:    i.product.precio * i.cantidad
-          }));
+          this.cargando.set(true);
+          try {
+            const itemsParaPedido = this.items().map(i => ({
+              producto_id: i.product.id,
+              nombre:      i.product.nombre,
+              precio:      i.product.precio,
+              cantidad:    i.cantidad,
+              subtotal:    i.product.precio * i.cantidad
+            }));
 
-          const res = await firstValueFrom(
-            this.paypalService.captureOrder(
-              data.orderID,
-              itemsParaPedido,
-              this.subtotal(),
-              this.iva(),
-              this.total()
-            )
-          );
+            const res = await firstValueFrom(
+              this.paypalService.captureOrder(
+                data.orderID,
+                itemsParaPedido,
+                this.subtotal(),
+                this.iva(),
+                this.total()
+              )
+            );
 
-          if (res.ok) {
-            this.pagoExitoso.set(res);
-            this.reciboEnviado.set(true);
-            this.carritoService.vaciar();
-          } else {
-            this.error.set('El pago no pudo completarse. Intenta de nuevo.');
+            if (res.ok) {
+              this.pagoExitoso.set(res);
+              this.reciboEnviado.set(true);
+              this.carritoService.vaciar();
+            } else {
+              this.error.set('El pago no pudo completarse. Intenta de nuevo.');
+            }
+
+            this.cargando.set(false);
+          } catch (err) {
+            this.cargando.set(false);
+            this.error.set('El pago no pudo completarse. Por favor intenta de nuevo.');
           }
-
-          this.cargando.set(false);
         },
 
         // ── Usuario canceló ──────────────────────────────────────────
@@ -144,8 +150,8 @@ export class CheckoutComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // ── Error de PayPal ──────────────────────────────────────────
         onError: (err: any) => {
-          console.error('PayPal error:', err);
-          this.error.set('Error con PayPal. Intenta de nuevo.');
+          console.error('[Checkout] PayPal error:', err);
+          this.error.set('Ocurrió un error con PayPal. Por favor intenta de nuevo.');
           this.cargando.set(false);
         },
 
