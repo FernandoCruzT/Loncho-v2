@@ -343,6 +343,111 @@
   text-decoration: underline;
 }
 
+/* ── Olvidaste contraseña ────────────────────────────────────────── */
+.link-olvidaste {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+.link-olvidaste button {
+  background: none;
+  border: none;
+  color: #e63030;
+  cursor: pointer;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  font-family: inherit;
+}
+.link-olvidaste button:hover { color: #ff5555; }
+
+/* ── Modal overlay ───────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.15s;
+}
+.modal-close:hover { color: #fff; }
+
+/* ── Modal recuperar contraseña ──────────────────────────────────── */
+.modal-reset {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 420px;
+  padding: 1.75rem;
+  position: relative;
+  width: 100%;
+}
+.modal-reset h3 {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+.reset-sub { color: #888; font-size: 0.88rem; margin: 0; }
+.reset-error { color: #f87171; font-size: 0.83rem; margin: 0; }
+
+.reset-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  justify-content: center;
+}
+.reset-steps span {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: #222;
+  border: 1px solid #444;
+  color: #666;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+}
+.reset-steps span.active { background: #e63030; border-color: #e63030; color: #fff; }
+.reset-step-line { flex: 1; max-width: 40px; height: 1px; background: #333; }
+
+.btn-reset-primary {
+  width: 100%; padding: 0.65rem;
+  background: #e63030; color: #fff;
+  border: none; border-radius: 8px;
+  cursor: pointer; font-weight: 700; font-size: 0.9rem;
+  font-family: inherit;
+  transition: background 0.18s;
+}
+.btn-reset-primary:hover:not(:disabled) { background: #c42020; }
+.btn-reset-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-reset-secondary {
+  width: 100%; padding: 0.55rem;
+  background: transparent;
+  border: 1px solid #333; border-radius: 8px;
+  color: #888; cursor: pointer; font-size: 0.85rem;
+  font-family: inherit;
+  transition: border-color 0.18s, color 0.18s;
+}
+.btn-reset-secondary:not(:disabled):hover { border-color: #555; color: #ccc; }
+.btn-reset-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
 /* ── Responsive ──────────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .auth-card {

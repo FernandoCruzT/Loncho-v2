@@ -209,6 +209,88 @@ async function eliminarCuenta(req, res) {
   return res.json({ ok: true, mensaje: 'Cuenta eliminada' });
 }
 
+async function solicitarReset(req, res) {
+  const { email } = req.body;
+
+  const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+  if (result.rows.length === 0) {
+    return res.status(404).json({ ok: false, mensaje: 'No existe una cuenta con ese correo' });
+  }
+
+  const usuario = result.rows[0];
+  const ahora   = new Date();
+
+  if (usuario.reset_expira && new Date(usuario.reset_expira) > ahora) {
+    return res.status(429).json({ ok: false, mensaje: 'Espera antes de solicitar otro código' });
+  }
+
+  const codigo = generarCodigo();
+  const mins   = parseInt(process.env.CODIGO_EXPIRACION_MIN ?? '6');
+  await pool.query(
+    `UPDATE usuarios SET reset_codigo=$1, reset_expira=NOW() + INTERVAL '${mins} minutes' WHERE id=$2`,
+    [codigo, usuario.id]
+  );
+
+  await emailService.sendResetCodigo(email, usuario.nombre, codigo);
+  return res.json({ ok: true, mensaje: 'Código enviado a tu correo' });
+}
+
+async function verificarReset(req, res) {
+  const { email, codigo } = req.body;
+
+  const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+  if (result.rows.length === 0) {
+    return res.status(404).json({ ok: false, mensaje: 'No existe una cuenta con ese correo' });
+  }
+
+  const usuario = result.rows[0];
+  const ahora   = new Date();
+
+  if (!usuario.reset_expira || new Date(usuario.reset_expira) < ahora) {
+    return res.status(400).json({ ok: false, mensaje: 'El código expiró. Solicita uno nuevo.' });
+  }
+
+  if (usuario.reset_codigo !== codigo) {
+    return res.status(400).json({ ok: false, mensaje: 'Código incorrecto' });
+  }
+
+  return res.json({ ok: true, mensaje: 'Código válido' });
+}
+
+async function resetPassword(req, res) {
+  const { email, codigo, passwordNueva } = req.body;
+
+  if (!email || !codigo || !passwordNueva) {
+    return res.status(400).json({ ok: false, mensaje: 'email, codigo y passwordNueva son requeridos' });
+  }
+
+  const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+  if (result.rows.length === 0) {
+    return res.status(404).json({ ok: false, mensaje: 'No existe una cuenta con ese correo' });
+  }
+
+  const usuario = result.rows[0];
+  const ahora   = new Date();
+
+  if (!usuario.reset_expira || new Date(usuario.reset_expira) < ahora) {
+    return res.status(400).json({ ok: false, mensaje: 'El código expiró. Solicita uno nuevo.' });
+  }
+
+  if (usuario.reset_codigo !== codigo) {
+    return res.status(400).json({ ok: false, mensaje: 'Código incorrecto' });
+  }
+
+  const hash = await bcrypt.hash(passwordNueva, SALT_ROUNDS);
+  await pool.query(
+    'UPDATE usuarios SET password=$1, reset_codigo=null, reset_expira=null WHERE id=$2',
+    [hash, usuario.id]
+  );
+
+  const { id, nombre, rol } = usuario;
+  const token = signToken({ id, nombre, email, rol });
+  return res.json({ ok: true, token, usuario: { id, nombre, email, rol } });
+}
+
 async function updatePerfil(req, res) {
   const { id } = req.usuario;
   const { nombre, passwordActual, passwordNueva } = req.body;
@@ -248,4 +330,4 @@ async function updatePerfil(req, res) {
   return res.json({ ok: true, mensaje: 'Perfil actualizado', usuario: u });
 }
 
-module.exports = { register, login, verificarEmail, verificarCodigo, reenviarCodigo, updatePerfil, eliminarCuenta };
+module.exports = { register, login, verificarEmail, verificarCodigo, reenviarCodigo, updatePerfil, eliminarCuenta, solicitarReset, verificarReset, resetPassword };

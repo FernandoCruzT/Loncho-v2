@@ -82,6 +82,30 @@ export class AuthService {
     return this.http.post<any>(`${environment.apiUrl}/auth/reenviar-codigo`, { email });
   }
 
+  // ─── Recuperación de contraseña ───────────────────────────────────
+  solicitarReset(email: string): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/auth/solicitar-reset`, { email });
+  }
+
+  verificarReset(email: string, codigo: string): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/auth/verificar-reset`, { email, codigo });
+  }
+
+  resetPassword(email: string, codigo: string, passwordNueva: string): Observable<any> {
+    return this.http
+      .post<any>(`${environment.apiUrl}/auth/reset-password`, { email, codigo, passwordNueva })
+      .pipe(
+        tap(res => {
+          if (res.ok) {
+            localStorage.setItem('loncho_token',   res.token);
+            localStorage.setItem('loncho_usuario', JSON.stringify(res.usuario));
+            this._token.set(res.token);
+            this._usuario.set(res.usuario);
+          }
+        })
+      );
+  }
+
   // ─── Logout ───────────────────────────────────────────────────────
   logout(): void {
     localStorage.removeItem('loncho_token');

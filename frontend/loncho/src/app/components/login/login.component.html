@@ -120,6 +120,11 @@
         }
       </button>
 
+      <!-- Olvidaste contraseña -->
+      <div class="link-olvidaste">
+        <button type="button" (click)="abrirReset()">¿Olvidaste tu contraseña?</button>
+      </div>
+
     </form>
 
     <!-- ── Link a registro ───────────────────────────────────────── -->
@@ -130,3 +135,83 @@
 
   </div>
 </div>
+
+@if (mostrarReset()) {
+  <div class="modal-overlay" (click)="cerrarReset()">
+    <div class="modal-reset" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="cerrarReset()">✕</button>
+      <h3>Recuperar contraseña</h3>
+
+      <!-- Indicador de pasos -->
+      <div class="reset-steps">
+        <span [class.active]="resetStep() >= 1">1</span>
+        <span class="reset-step-line"></span>
+        <span [class.active]="resetStep() >= 2">2</span>
+        <span class="reset-step-line"></span>
+        <span [class.active]="resetStep() >= 3">3</span>
+      </div>
+
+      @if (resetStep() === 1) {
+        <p class="reset-sub">Ingresa tu correo y te enviaremos un código</p>
+        <div class="campo">
+          <label>Correo electrónico</label>
+          <input type="email" [value]="resetEmail()"
+            (input)="resetEmail.set($any($event.target).value)"
+            [disabled]="resetLoading()" placeholder="tu@correo.com"/>
+        </div>
+        @if (resetError()) { <p class="reset-error">⚠ {{ resetError() }}</p> }
+        <button class="btn-reset-primary" (click)="enviarCodigoReset()" [disabled]="resetLoading()">
+          {{ resetLoading() ? 'Enviando...' : 'Enviar código' }}
+        </button>
+      }
+
+      @if (resetStep() === 2) {
+        <p class="reset-sub">Ingresa el código que enviamos a <strong>{{ resetEmail() }}</strong></p>
+        <input type="text" inputmode="numeric" maxlength="6"
+          placeholder="000000" class="codigo-input"
+          [value]="resetCodigo()"
+          (input)="resetCodigo.set($any($event.target).value.replace(/\D/g,'').slice(0,6))"
+          [disabled]="resetLoading()"/>
+        @if (resetError()) { <p class="reset-error">⚠ {{ resetError() }}</p> }
+        <button class="btn-reset-primary" (click)="verificarCodigoReset()" [disabled]="resetLoading()">
+          {{ resetLoading() ? 'Verificando...' : 'Verificar código' }}
+        </button>
+        <button class="btn-reset-secondary" (click)="enviarCodigoReset()"
+          [disabled]="resetSegundos() > 0 || resetLoading()">
+          @if (resetSegundos() > 0) { Reenviar ({{ resetSegundos() }}s) }
+          @else { Reenviar código }
+        </button>
+      }
+
+      @if (resetStep() === 3) {
+        <p class="reset-sub">Elige tu nueva contraseña</p>
+        <div class="campo">
+          <label>Nueva contraseña</label>
+          <div class="campo-password">
+            <input [type]="resetMostrarPass() ? 'text' : 'password'"
+              [value]="resetPassword()"
+              (input)="resetPassword.set($any($event.target).value)"
+              [disabled]="resetLoading()" placeholder="Mínimo 6 caracteres"/>
+            <button type="button" class="btn-ojito"
+              (click)="resetMostrarPass.set(!resetMostrarPass())">
+              {{ resetMostrarPass() ? '🙈' : '👁' }}
+            </button>
+          </div>
+        </div>
+        <div class="campo">
+          <label>Confirmar contraseña</label>
+          <div class="campo-password">
+            <input [type]="resetMostrarPass() ? 'text' : 'password'"
+              [value]="resetConfirm()"
+              (input)="resetConfirm.set($any($event.target).value)"
+              [disabled]="resetLoading()" placeholder="Repite la contraseña"/>
+          </div>
+        </div>
+        @if (resetError()) { <p class="reset-error">⚠ {{ resetError() }}</p> }
+        <button class="btn-reset-primary" (click)="confirmarReset()" [disabled]="resetLoading()">
+          {{ resetLoading() ? 'Guardando...' : 'Cambiar contraseña' }}
+        </button>
+      }
+    </div>
+  </div>
+}

@@ -160,7 +160,7 @@ async function sendCodigoVerificacion(email, nombre, codigo) {
           <div style="background:#1a1a1a;border-radius:12px;padding:24px;margin:0 0 20px;">
             <span style="font-size:2.5rem;font-weight:900;color:#e63030;letter-spacing:0.4rem;">${codigo}</span>
           </div>
-          <p style="font-size:0.85rem;color:#666;margin:0;">Este código expira en 1 minuto.</p>
+          <p style="font-size:0.85rem;color:#666;margin:0;">Este código expira en 6 minutos.</p>
         </div>
         <div style="padding:16px 32px;background:#111;text-align:center;">
           <p style="margin:0;color:#555;font-size:0.75rem;">© 2025 Loncho Streetwear · Ciudad de México</p>
@@ -170,4 +170,35 @@ async function sendCodigoVerificacion(email, nombre, codigo) {
   });
 }
 
-module.exports = { sendXMLRecibo, sendVerificacionEmail, sendCodigoVerificacion };
+async function sendResetCodigo(email, nombre, codigo) {
+  await transporter.sendMail({
+    from:    process.env.EMAIL_FROM,
+    to:      email,
+    subject: 'Recupera tu contraseña - Loncho',
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#0d0d0d;color:#eeeeee;border-radius:12px;overflow:hidden;">
+        <div style="background:#e63030;padding:24px 32px;">
+          <h1 style="margin:0;font-size:1.4rem;letter-spacing:0.1em;color:#fff;">LONCHO</h1>
+          <p style="margin:4px 0 0;color:rgba(255,255,255,0.8);font-size:0.9rem;">Recuperación de contraseña</p>
+        </div>
+        <div style="padding:32px;text-align:center;">
+          <p style="font-size:1rem;color:#eee;margin:0 0 8px;text-align:left;">Hola <strong>${nombre}</strong>,</p>
+          <p style="font-size:0.95rem;color:#bbb;margin:0 0 28px;text-align:left;">
+            Recibiste este correo porque solicitaste restablecer tu contraseña en Loncho. Tu código es:
+          </p>
+          <div style="background:#1a1a1a;border-radius:12px;padding:24px;margin:0 0 20px;">
+            <span style="font-size:2.5rem;font-weight:900;color:#e63030;letter-spacing:0.4rem;">${codigo}</span>
+          </div>
+          <p style="font-size:0.85rem;color:#666;margin:0;">
+            Este código expira en 6 minutos. Si no solicitaste esto, ignora este mensaje.
+          </p>
+        </div>
+        <div style="padding:16px 32px;background:#111;text-align:center;">
+          <p style="margin:0;color:#555;font-size:0.75rem;">© 2025 Loncho Streetwear · Ciudad de México</p>
+        </div>
+      </div>
+    `
+  });
+}
+
+module.exports = { sendXMLRecibo, sendVerificacionEmail, sendCodigoVerificacion, sendResetCodigo };

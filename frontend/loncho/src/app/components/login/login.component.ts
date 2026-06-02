@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -12,7 +12,7 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnDestroy {
 
   private authService = inject(AuthService);
   private router      = inject(Router);
@@ -34,8 +34,140 @@ export class LoginComponent {
   verificandoLogin  = signal(false);
   errorCodigoLogin  = signal('');
 
+  // ─── Recuperación de contraseña ──────────────────────────────────
+  mostrarReset     = signal(false);
+  resetStep        = signal<1 | 2 | 3>(1);
+  resetEmail       = signal('');
+  resetCodigo      = signal('');
+  resetPassword    = signal('');
+  resetConfirm     = signal('');
+  resetMostrarPass = signal(false);
+  resetLoading     = signal(false);
+  resetError       = signal('');
+  resetMensaje     = signal('');
+  resetSegundos    = signal(0);
+  resetCountdownId: ReturnType<typeof setInterval> | null = null;
+
   // ─── Validación de email ─────────────────────────────────────────
   private readonly EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  ngOnDestroy(): void {
+    if (this.resetCountdownId) clearInterval(this.resetCountdownId);
+  }
+
+  // ─── Reset: abrir / cerrar ────────────────────────────────────────
+  abrirReset(): void {
+    this.mostrarReset.set(true);
+    this.resetStep.set(1);
+    this.resetEmail.set(this.email());
+    this.resetError.set('');
+    this.resetMensaje.set('');
+  }
+
+  cerrarReset(): void {
+    this.mostrarReset.set(false);
+    this.resetStep.set(1);
+    this.resetEmail.set('');
+    this.resetCodigo.set('');
+    this.resetPassword.set('');
+    this.resetConfirm.set('');
+    this.resetMostrarPass.set(false);
+    this.resetLoading.set(false);
+    this.resetError.set('');
+    this.resetMensaje.set('');
+    this.resetSegundos.set(0);
+    if (this.resetCountdownId) {
+      clearInterval(this.resetCountdownId);
+      this.resetCountdownId = null;
+    }
+  }
+
+  private iniciarResetCountdown(): void {
+    if (this.resetCountdownId) clearInterval(this.resetCountdownId);
+    this.resetSegundos.set(60);
+    this.resetCountdownId = setInterval(() => {
+      const s = this.resetSegundos() - 1;
+      this.resetSegundos.set(s);
+      if (s <= 0 && this.resetCountdownId) {
+        clearInterval(this.resetCountdownId);
+        this.resetCountdownId = null;
+      }
+    }, 1000);
+  }
+
+  enviarCodigoReset(): void {
+    if (!this.resetEmail()) {
+      this.resetError.set('Ingresa tu correo');
+      return;
+    }
+    this.resetLoading.set(true);
+    this.resetError.set('');
+    this.authService
+      .solicitarReset(this.resetEmail())
+      .pipe(finalize(() => this.resetLoading.set(false)))
+      .subscribe({
+        next: res => {
+          if (res.ok) {
+            this.resetStep.set(2);
+            this.iniciarResetCountdown();
+          } else {
+            this.resetError.set(res.mensaje ?? 'No se pudo enviar el código');
+          }
+        },
+        error: err => {
+          this.resetError.set(err?.error?.mensaje ?? 'No se pudo enviar el código');
+        }
+      });
+  }
+
+  verificarCodigoReset(): void {
+    this.resetLoading.set(true);
+    this.resetError.set('');
+    this.authService
+      .verificarReset(this.resetEmail(), this.resetCodigo())
+      .pipe(finalize(() => this.resetLoading.set(false)))
+      .subscribe({
+        next: res => {
+          if (res.ok) {
+            this.resetStep.set(3);
+          } else {
+            this.resetError.set(res.mensaje ?? 'Código incorrecto');
+          }
+        },
+        error: err => {
+          this.resetError.set(err?.error?.mensaje ?? 'Código incorrecto');
+        }
+      });
+  }
+
+  confirmarReset(): void {
+    if (this.resetPassword() !== this.resetConfirm()) {
+      this.resetError.set('Las contraseñas no coinciden');
+      return;
+    }
+    if (this.resetPassword().length < 6) {
+      this.resetError.set('Mínimo 6 caracteres');
+      return;
+    }
+    this.resetLoading.set(true);
+    this.resetError.set('');
+    this.authService
+      .resetPassword(this.resetEmail(), this.resetCodigo(), this.resetPassword())
+      .pipe(finalize(() => this.resetLoading.set(false)))
+      .subscribe({
+        next: res => {
+          if (res.ok) {
+            this.cerrarReset();
+            this.router.navigate(['/']);
+          } else {
+            this.resetError.set(res.mensaje ?? 'No se pudo cambiar la contraseña');
+          }
+        },
+        error: err => {
+          this.resetError.set(err?.error?.mensaje ?? 'No se pudo cambiar la contraseña');
+        }
+      });
+  }
 
   // ─── Solicitar nuevo código ───────────────────────────────────────
   solicitarCodigo(): void {
